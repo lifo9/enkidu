@@ -1,0 +1,3 @@
+ups_name: "{{ ansible_hostname }}"
+notify_script_dst: /usr/local/bin/ups_notify
+nut_user_password: "{{ lookup('ansible.builtin.password', '/dev/null', seed=inventory_hostname) }}"

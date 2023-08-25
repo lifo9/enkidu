@@ -1,0 +1,59 @@
+- name: Update sources
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install NUT for UPS monitoring / management
+  ansible.builtin.apt:
+    name: nut
+    state: present
+
+- name: Set nut user password
+  ansible.builtin.user:
+    name: nut
+    password: "{{ nut_user_password | password_hash('sha512') }}"
+    create_home: false
+    shell: /usr/sbin/nologin
+
+- name: Install NUT configuration files
+  ansible.builtin.template:
+    src: "templates/{{ item }}.j2"
+    dest: "/etc/nut/{{ item }}"
+    owner: root
+    group: nut
+    mode: "0640"
+  loop:
+    - nut.conf
+    - ups.conf
+    - upsd.users
+    - upsmon.conf
+  notify: Restart NUT services
+
+- name: Install notify script
+  ansible.builtin.template:
+    src: templates/ups_notify.j2
+    dest: "{{ notify_script_dst }}"
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart NUT services
+
+- name: Enable NUT services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - nut-server
+    - nut-client
+    - nut-monitor
+
+- name: Check the status of UPS beeper
+  ansible.builtin.command:
+    cmd: upsc {{ ups_name }} ups.beeper.status
+  register: result
+  changed_when: false
+
+- name: Disable UPS beeper if enabled
+  ansible.builtin.command:
+    cmd: upscmd -u nut -p {{ nut_user_password }} {{ ups_name }} beeper.disable
+  when: "'enabled' in result.stdout"
+  changed_when: false

@@ -1,0 +1,16 @@
+- name: Update sources
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install curl
+  ansible.builtin.apt:
+    name: curl
+    state: present
+
+- name: Install pushover script
+  ansible.builtin.template:
+    src: templates/pushover.j2
+    dest: /usr/local/bin/pushover
+    owner: root
+    group: root
+    mode: "0755"
