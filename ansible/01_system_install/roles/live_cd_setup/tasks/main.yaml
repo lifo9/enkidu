@@ -1,0 +1,48 @@
+- name: Set live CD root password
+  ansible.builtin.user:
+    name: root
+    password: "{{ 'live' | password_hash('sha512') }}"
+
+- name: Configure apt sources
+  ansible.builtin.template:
+    src: "templates/sources.list.j2"
+    dest: "/etc/apt/sources.list"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure all packages are up to date
+  ansible.builtin.apt:
+    upgrade: safe
+    force_apt_get: true
+    autoclean: true
+    autoremove: true
+    update_cache: true
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - debootstrap
+      - zfsutils-linux
+      - gdisk
+
+- name: Setup ssh
+  ansible.builtin.template:
+    src: "templates/sshd_config.j2"
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Setup chroot ssh
+  ansible.builtin.template:
+    src: "templates/sshd_chroot_config.j2"
+    dest: /etc/ssh/sshd_config.d/sshd_chroot.conf
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Restart ssh service
+  ansible.builtin.service:
+    name: ssh
+    state: restarted

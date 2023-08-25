@@ -1,0 +1,10 @@
+debian_version: "{{ ansible_distribution_release }}"
+hostname: "server"
+timezone_region: "Europe"
+timezone_city: "Bratislava"
+authorized_key: "ssh-ed25519 AAAA..."
+user_name: "user"
+user_password: "user_password"
+disk_ids: ["disk_id_1", "disk_id_2"]
+root_dataset_name: "rpool/ROOT/debian"
+server_port: 22

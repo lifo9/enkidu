@@ -1,0 +1,25 @@
+- name: Set unmounts
+  ansible.builtin.command: /bin/bash -c "set -o pipefail | mount | grep -v zfs | tac | awk '/\\/mnt/ {print $3}'"
+  register: umounts
+  changed_when: false
+
+- name: Unmount non-ZFS file systems mounted under /mnt
+  ansible.builtin.command: "umount -lf {{ item }}"
+  with_items: "{{ umounts.stdout_lines }}"
+  changed_when: false
+
+- name: Unmount /mnt recursively
+  ansible.builtin.command: "umount -R /mnt"
+  changed_when: false
+
+- name: Export zfs filesystems
+  ansible.builtin.command: zpool export -a
+  changed_when: false
+
+- name: Reboot
+  ansible.builtin.reboot:
+    reboot_timeout: 0
+  async: 0
+  poll: 0
+  register: reboot
+  ignore_errors: true

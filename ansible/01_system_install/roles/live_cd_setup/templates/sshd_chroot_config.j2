@@ -1,0 +1,6 @@
+Port {{ chroot_port }}
+Match LocalPort {{ chroot_port }}
+	ChrootDirectory /mnt
+	X11Forwarding no
+	PermitRootLogin yes
+

@@ -1,0 +1,34 @@
+- name: Prepare installation
+  hosts: server
+  gather_facts: true
+  become: true
+  vars:
+    server_port: "{{ lookup('env', 'SERVER_PORT') }}"
+    chroot_port: "{{ lookup('env', 'CHROOT_PORT') }}"
+    encryption_passphrase: "{{ lookup('env', 'ENCRYPTION_PASSPHRASE') }}"
+  roles:
+    - role: live_cd_setup
+    - role: disks
+    - role: bootstrap
+
+- name: Install system in chroot
+  hosts: server_chroot
+  gather_facts: true
+  become: true
+  vars:
+    server_port: "{{ lookup('env', 'SERVER_PORT') }}"
+    hostname: "{{ lookup('env', 'HOSTNAME') }}"
+    timezone_region: "{{ lookup('env', 'TIMEZONE_REGION') }}"
+    timezone_city: "{{ lookup('env', 'TIMEZONE_CITY') }}"
+    authorized_key: "{{ lookup('env', 'AUTHORIZED_KEY') }}"
+    user_name: "{{ lookup('env', 'USER_NAME') }}"
+    user_password: "{{ lookup('env', 'USER_PASSWORD') }}"
+  roles:
+    - role: chroot_install
+
+- name: Finish installation
+  hosts: server
+  gather_facts: true
+  become: true
+  roles:
+    - role: cleanup

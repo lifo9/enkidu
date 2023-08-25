@@ -1,0 +1,35 @@
+- name: Install minimal system
+  ansible.builtin.command: debootstrap --include python3 {{ debian_version }} /mnt
+  args:
+    creates: /mnt/etc
+
+- name: Create directory /mnt/etc/zfs
+  ansible.builtin.file:
+    path: /mnt/etc/zfs
+    state: directory
+    mode: "755"
+
+- name: Copy file /etc/zfs/zpool.cache
+  ansible.builtin.copy:
+    src: /etc/zfs/zpool.cache
+    remote_src: true
+    dest: /mnt/etc/zfs/
+    mode: "600"
+
+- name: Mount necessary /dev and /sys
+  ansible.posix.mount:
+    src: "/{{ item }}"
+    path: /mnt/{{ item }}
+    fstype: none
+    opts: rbind
+    state: mounted
+  loop:
+    - dev
+    - sys
+
+- name: Mount /proc
+  ansible.posix.mount:
+    src: "proc"
+    path: /mnt/proc
+    fstype: proc
+    state: mounted

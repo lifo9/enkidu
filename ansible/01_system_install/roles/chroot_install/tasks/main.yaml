@@ -1,0 +1,301 @@
+- name: Set boot_partition_uuid_result variable
+  ansible.builtin.command: blkid -s UUID -o value /dev/disk/by-id/{{ disk_ids[0] }}-part1
+  register: boot_partition_uuid_result
+  changed_when: false
+
+- name: Set boot_partition_uuid variable
+  ansible.builtin.set_fact:
+    boot_partition_uuid: "{{ boot_partition_uuid_result.stdout }}"
+
+- name: Update hostanme
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
+
+- name: Add hostname to /mnt/etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "127.0.1.1       {{ hostname }}"
+
+- name: Configure network interface
+  ansible.builtin.template:
+    src: "templates/network.j2"
+    dest: /etc/network/interfaces.d/{{ ansible_default_ipv4.interface }}
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure package sources
+  ansible.builtin.template:
+    src: "templates/sources.list.j2"
+    dest: "/etc/apt/sources.list"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Perform dist upgrade
+  ansible.builtin.apt:
+    upgrade: dist
+    force_apt_get: true
+    autoclean: true
+    autoremove: true
+    update_cache: true
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - locales
+      - dpkg-dev
+      - linux-headers-generic
+      - linux-image-generic
+      - zfs-initramfs
+      - systemd-timesyncd
+      - dosfstools
+
+- name: Remove os-prober
+  ansible.builtin.apt:
+    name: os-prober
+    state: absent
+
+- name: Set default locale to en_US.UTF-8
+  ansible.builtin.debconf:
+    name: locales
+    question: locales/default_environment_locale
+    value: en_US.UTF-8
+    vtype: select
+
+- name: Configure locales to generate
+  ansible.builtin.debconf:
+    name: locales
+    question: locales/locales_to_be_generated
+    value: en_US.UTF-8 UTF-8
+    vtype: multiselect
+
+- name: Set timezone region
+  ansible.builtin.debconf:
+    name: tzdata
+    question: tzdata/Areas
+    value: "{{ timezone_region }}"
+    vtype: select
+
+- name: Set timezone city
+  ansible.builtin.debconf:
+    name: tzdata
+    question: tzdata/Zones/{{ timezone_region }}}
+    value: "{{ timezone_city }}"
+    vtype: select
+
+- name: Ensure ZFS update rebuilds all initramfs
+  ansible.builtin.copy:
+    dest: /etc/dkms/zfs.conf
+    content: REMAKE_INITRD=yes
+    mode: "644"
+
+- name: Create EFI filesystem
+  community.general.filesystem:
+    fstype: vfat
+    opts: -F 32 -s 1 -n EFI
+    dev: /dev/disk/by-id/{{ disk_ids[0] }}-part1
+
+- name: Create /boot/efi mountpoint
+  ansible.builtin.file:
+    path: /boot/efi
+    state: directory
+    mode: "700"
+
+- name: Create /etc/fstab
+  ansible.builtin.template:
+    src: "templates/fstab.j2"
+    dest: /etc/fstab
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Mount /boot/efi
+  ansible.posix.mount:
+    src: /dev/disk/by-id/{{ disk_ids[0] }}-part1
+    path: /boot/efi
+    fstype: vfat
+    state: mounted
+
+- name: Install GRUB
+  ansible.builtin.apt:
+    name:
+      - grub-efi-amd64
+      - shim-signed
+
+- name: Create zfs-import-bpool service
+  ansible.builtin.template:
+    src: "templates/zfs-import-bpool.service.j2"
+    dest: /etc/systemd/system/zfs-import-bpool.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable zfs-import-bpool service
+  ansible.builtin.systemd:
+    name: zfs-import-bpool.service
+    enabled: true
+
+- name: Create tmp.mount service
+  ansible.builtin.copy:
+    src: /usr/share/systemd/tmp.mount
+    remote_src: true
+    dest: /etc/systemd/system/tmp.mount
+    mode: "644"
+
+- name: Mount tmpfs to /tmp
+  ansible.builtin.systemd:
+    name: tmp.mount
+    enabled: true
+
+- name: Install OpenSSH server
+  ansible.builtin.apt:
+    name: openssh-server
+    state: present
+
+- name: Configure OpenSSH server
+  ansible.builtin.template:
+    src: "templates/sshd_config.j2"
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "600"
+
+- name: Install Dropbear
+  ansible.builtin.apt:
+    name: dropbear-initramfs
+    state: present
+    install_recommends: false
+
+- name: Configure Dropbear
+  ansible.builtin.template:
+    src: "templates/dropbear.j2"
+    dest: /etc/dropbear/initramfs/dropbear.conf
+    owner: root
+    group: root
+    mode: "600"
+
+- name: Add SSH key to Dropbear
+  ansible.posix.authorized_key:
+    key: "{{ authorized_key }}"
+    path: /etc/dropbear/initramfs/authorized_keys
+    user: root
+
+- name: Rebuild initramfs
+  ansible.builtin.command: update-initramfs -u -k all
+  changed_when: false
+
+- name: Workaround GRUB's missing zpool-features support
+  ansible.builtin.template:
+    src: "templates/grub_default.j2"
+    dest: /etc/default/grub
+    owner: root
+    group: root
+    mode: "644"
+
+- name: Update GRUB
+  ansible.builtin.command: update-grub
+  changed_when: false
+
+- name: Install GRUB to the ESP
+  ansible.builtin.command: grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=debian --recheck --no-floppy
+  changed_when: false
+
+- name: Create /etc/zfs/zfs-list.cache/ directory
+  ansible.builtin.file:
+    path: /etc/zfs/zfs-list.cache/
+    state: directory
+    recurse: true
+    mode: "700"
+
+- name: Create /etc/zfs/zfs-list.cache/{bpool,zpool}
+  ansible.builtin.file:
+    path: "/etc/zfs/zfs-list.cache/{{ item }}"
+    state: touch
+    mode: "600"
+  with_items:
+    - bpool
+    - rpool
+
+- name: Start zed
+  ansible.builtin.command: zed -F
+  async: 31536000
+  poll: 0
+  changed_when: false
+
+- name: Wait for /etc/zfs/zfs-list.cache/rpool to not be empty
+  ansible.builtin.shell:
+    cmd: "set -o pipefail | du -scb /etc/zfs/zfs-list.cache/* | tail -n 1 | cut -f 1"
+    executable: /bin/bash
+  register: zfs_list_cache_size
+  until: zfs_list_cache_size.stdout | int > 0
+  retries: 10
+  delay: 6
+  changed_when: false
+
+- name: Stop zed
+  ansible.builtin.command: pkill zed
+  changed_when: false
+
+- name: Fix paths to eliminate /mnt
+  ansible.builtin.command:
+    cmd: sh -c 'sed -Ei "s|/mnt/?|/|" /etc/zfs/zfs-list.cache/*'
+  changed_when: false
+
+- name: Disable log compression
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail |
+      for file in /etc/logrotate.d/* ; do
+        if grep -Eq "(^|[^#y])compress" "$file" ; then
+            sed -i -r "s/(^|[^#y])(compress)/\1#\2/" "$file"
+        fi
+      done
+    executable: /bin/bash
+  changed_when: false
+
+- name: Create ssh-user group
+  ansible.builtin.group:
+    name: ssh-user
+    state: present
+
+- name: Disable root account
+  ansible.builtin.user:
+    name: root
+    password: "*"
+    shell: /usr/sbin/nologin
+
+- name: Create user account
+  ansible.builtin.user:
+    name: "{{ user_name }}"
+    password: "{{ user_password | password_hash('sha512') }}"
+    shell: /bin/bash
+    groups:
+      - sudo
+      - ssh-user
+
+- name: Add SSH key to user
+  ansible.posix.authorized_key:
+    key: "{{ authorized_key }}"
+    path: /home/{{ user_name }}/.ssh/authorized_keys
+    user: "{{ user_name }}"
+
+- name: Find files in /etc/logrotate.d
+  ansible.builtin.find:
+    paths: "/etc/logrotate.d"
+    patterns: "*"
+  register: logrotate_files
+
+- name: Unmount /boot/efi
+  ansible.posix.mount:
+    path: /boot/efi
+    state: unmounted
+
+- name: Mirror GRUB
+  ansible.builtin.command:
+    cmd: dd if=/dev/disk/by-id/{{ disk_ids[0] }}-part1 of=/dev/disk/by-id/{{ disk_ids[1] }}-part1
+  changed_when: false
+
+- name: Create a new efi boot entry
+  ansible.builtin.command: efibootmgr -c -g -d /dev/disk/by-id/{{ disk_ids[1] }}-part1 -p 2 -L "debian-2" -l '\EFI\debian\grubx64.efi'
+  changed_when: false

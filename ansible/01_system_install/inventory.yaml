@@ -1,0 +1,14 @@
+all:
+  hosts:
+    server:
+      ansible_host: "{{ lookup('env', 'SERVER_IP') }}"
+      ansible_port: "{{ lookup('env', 'SERVER_PORT') }}"
+      ansible_user: "user"
+      ansible_ssh_pass: "live"
+      ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    server_chroot:
+      ansible_host: "{{ lookup('env', 'SERVER_IP') }}"
+      ansible_port: "{{ lookup('env', 'CHROOT_PORT') }}"
+      ansible_user: "root"
+      ansible_ssh_pass: "live"
+      ansible_ssh_common_args: "-o StrictHostKeyChecking=no"

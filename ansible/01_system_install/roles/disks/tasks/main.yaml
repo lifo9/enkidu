@@ -1,0 +1,251 @@
+- name: Gather disks information
+  ansible.builtin.setup:
+    filter: ansible_devices
+  no_log: true
+
+- name: Filter out loop and removable devices
+  ansible.builtin.set_fact:
+    filtered_devices: "{{ ansible_devices | dict2items | rejectattr('value.removable', 'equalto', '1') | rejectattr('key', 'match', '^loop.*') | list }}"
+  no_log: true
+
+- name: Construct disk_info list
+  ansible.builtin.set_fact:
+    disk_info: "{{ disk_info | default([]) + [{'name': item.key, 'model': item.value['model'], 'size': item.value['size']}] }}"
+  loop: "{{ filtered_devices }}"
+  loop_control:
+    loop_var: item
+  no_log: true
+
+- name: Show disk information
+  ansible.builtin.debug:
+    var: disk_info
+
+- name: Construct a list of disk names
+  ansible.builtin.set_fact:
+    disk_names: "{{ disk_info | map(attribute='name') | list }}"
+
+- name: Pick installation disks
+  ansible.builtin.pause:
+    prompt: "Refer to above disk information and enter two disk names separated by commas, which will be used for the system installation:"
+  register: user_input
+
+- name: Split user input into a list
+  ansible.builtin.set_fact:
+    selected_disks: "{{ user_input.user_input.split(',') }}"
+
+- name: Ensure that exactly two disks have been provided
+  ansible.builtin.assert:
+    that:
+      - selected_disks | length == 2
+      - selected_disks | intersect(disk_names) == selected_disks
+    fail_msg: "Please provide exactly two existing disks."
+
+- name: Confirm the installation disks selection
+  ansible.builtin.pause:
+    prompt: "You selected the disks '{{ selected_disks }}'. They will be erased! If you are sure about it, type 'yes'. To abort, type 'no'."
+  register: confirmation_input
+
+- name: Abort if not confirmed
+  ansible.builtin.fail:
+    msg: "Disk selection not confirmed. Aborting."
+  when: confirmation_input.user_input | lower != 'yes'
+
+- name: Save disk IDs to variable
+  ansible.builtin.shell: "set -o pipefail | ls -l /dev/disk/by-id | grep {{ item }} | awk '{print $9}' | head -n 1"
+  register: disk_ids_temp
+  loop: "{{ selected_disks }}"
+  changed_when: false
+
+- name: Save disk_ids_temp result in disk_ids list
+  ansible.builtin.set_fact:
+    disk_ids: "{{ disk_ids_temp.results | map(attribute='stdout') | list }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  with_items: "{{ groups['all'] }}"
+
+- name: Securely erase installation disks
+  ansible.builtin.command:
+    cmd: "blkdiscard -f /dev/disk/by-id/{{ item }}"
+  loop: "{{ disk_ids }}"
+  changed_when: false
+
+- name: Clear partition tables
+  ansible.builtin.command:
+    cmd: "sgdisk --zap-all /dev/disk/by-id/{{ item }}"
+  loop: "{{ disk_ids }}"
+  changed_when: false
+
+- name: Partition disks with 3 partitions - 512M EFI, 1G boot and rest of space for root
+  loop: "{{ disk_ids }}"
+  loop_control:
+    loop_var: disk
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      (
+        echo o
+        echo y
+        echo n
+        echo 1
+        echo
+        echo +512M
+        echo EF00
+        echo n
+        echo 2
+        echo
+        echo +1G
+        echo BF01
+        echo n
+        echo 3
+        echo
+        echo
+        echo BF00
+        echo w
+        echo y
+      ) | gdisk /dev/disk/by-id/{{ disk }}
+    executable: /bin/bash
+  changed_when: false
+
+- name: Update devices facts
+  ansible.builtin.setup:
+
+- name: Get all existing zfs pools information
+  community.general.zpool_facts:
+    properties: size
+
+- name: Get all existing zfs pools name
+  ansible.builtin.set_fact:
+    zfs_pools_names: "{{ ansible_zfs_pools | map(attribute='name') | list }}"
+
+- name: Create boot pool.
+  ansible.builtin.shell:
+    cmd: |
+      zpool create \
+      -o ashift=12 \
+      -o autotrim=on -d \
+      -o cachefile=/etc/zfs/zpool.cache \
+      -o feature@async_destroy=enabled \
+      -o feature@bookmarks=enabled \
+      -o feature@embedded_data=enabled \
+      -o feature@empty_bpobj=enabled \
+      -o feature@enabled_txg=enabled \
+      -o feature@extensible_dataset=enabled \
+      -o feature@filesystem_limits=enabled \
+      -o feature@hole_birth=enabled \
+      -o feature@large_blocks=enabled \
+      -o feature@livelist=enabled \
+      -o feature@lz4_compress=enabled \
+      -o feature@spacemap_histogram=enabled \
+      -o feature@zpool_checkpoint=enabled \
+      -O devices=off \
+      -O acltype=posixacl -O xattr=sa \
+      -O compression=lz4 \
+      -O normalization=formD \
+      -O relatime=on \
+      -O canmount=off -O mountpoint=/boot -R /mnt \
+      bpool mirror \
+      /dev/disk/by-id/{{ disk_ids[0] }}-part2 \
+      /dev/disk/by-id/{{ disk_ids[1] }}-part2
+  when: "'bpool' not in zfs_pools_names"
+  changed_when: false
+
+- name: Create encrypted root pool.
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      echo "{{ encryption_passphrase }}" | zpool create \
+      -o ashift=12 \
+      -o autotrim=on \
+      -O encryption=on -O keylocation=prompt -O keyformat=passphrase \
+      -O acltype=posixacl -O xattr=sa -O dnodesize=auto \
+      -O compression=lz4 \
+      -O normalization=formD \
+      -O relatime=on \
+      -O canmount=off -O mountpoint=/ -R /mnt \
+      rpool mirror \
+      /dev/disk/by-id/{{ disk_ids[0] }}-part3 \
+      /dev/disk/by-id/{{ disk_ids[1] }}-part3
+    executable: /bin/bash
+  when: "'rpool' not in zfs_pools_names"
+  changed_when: false
+
+- name: Create filesystem datasets to act as containers.
+  community.general.zfs:
+    name: "{{ item }}"
+    state: present
+    extra_zfs_properties:
+      canmount: false
+      mountpoint: none
+  loop:
+    - rpool/ROOT
+    - bpool/BOOT
+
+- name: Set root_dataset_name variable
+  ansible.builtin.set_fact:
+    root_dataset_name: "rpool/ROOT/debian"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  with_items: "{{ groups['all'] }}"
+
+- name: Create filesystem dataset for the root
+  community.general.zfs:
+    name: "{{ root_dataset_name }}"
+    state: present
+    extra_zfs_properties:
+      canmount: noauto
+      mountpoint: /
+
+- name: Mount the root filesystem
+  ansible.builtin.command: "zfs mount {{ root_dataset_name }}"
+  changed_when: false
+
+- name: Create filesystem dataset for the boot
+  community.general.zfs:
+    name: "bpool/BOOT/debian"
+    state: present
+    extra_zfs_properties:
+      mountpoint: /boot
+
+- name: Create datasets
+  community.general.zfs:
+    name: rpool/{{ item.name }}
+    state: present
+    extra_zfs_properties: "{{ item.properties | default({}) }}"
+  loop:
+    - name: home
+      properties:
+        mountpoint: none
+    - name: home/root
+      properties:
+        mountpoint: /root
+    - name: home/home
+      properties:
+        mountpoint: /home
+    - name: var
+      properties:
+        canmount: false
+    - name: var/lib
+      properties:
+        canmount: false
+    - name: var/log
+    - name: var/spool
+
+- name: Ensure /mnt/root has the right permissions
+  ansible.builtin.file:
+    name: /mnt/root
+    state: directory
+    mode: "700"
+
+- name: Create /mnt/run/lock
+  ansible.builtin.file:
+    path: /mnt/run/lock
+    state: directory
+    mode: "1777"
+    recurse: true
+
+- name: Mount tmpfs at /run
+  ansible.posix.mount:
+    src: tmpfs
+    path: /mnt/run
+    fstype: tmpfs
+    state: mounted

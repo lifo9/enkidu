@@ -1,0 +1,3 @@
+debian_version: "{{ ansible_distribution_release }}"
+server_port: 22
+chroot_port: 23
