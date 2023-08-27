@@ -7,6 +7,8 @@
     - role: hardening
     - role: pushover
     - role: ups
+    - role: smart_monitoring
+    - role: zfs_monitoring
     - role: common_packages
   tasks:
     - name: Reboot

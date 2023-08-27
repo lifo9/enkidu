@@ -1,0 +1,20 @@
+- name: Install zed
+  ansible.builtin.apt:
+    name: zfs-zed
+    state: present
+  register: zed_install_status
+
+- name: Configure zfs-zed
+  ansible.builtin.template:
+    src: templates/zed.rc.j2
+    dest: /etc/zfs/zed.d/zed.rc
+    owner: root
+    group: root
+    mode: "0600"
+  notify: Restart zfs-zed
+
+- name: Enable zfs-zed service
+  ansible.builtin.service:
+    name: zfs-zed.service
+    state: started
+    enabled: true

@@ -1,0 +1,39 @@
+- name: Install lm-sensors
+  ansible.builtin.apt:
+    name: lm-sensors
+    state: present
+  register: lm_sensors_install_status
+
+- name: Detect sensors
+  ansible.builtin.command: sensors-detect --auto # noqa no-handler
+  changed_when: true
+  when: lm_sensors_install_status.changed
+
+- name: Install smartmontools
+  ansible.builtin.apt:
+    name: smartmontools
+
+- name: Create smartd configuration
+  ansible.builtin.template:
+    src: templates/smartd.conf.j2
+    dest: /etc/smartd.conf
+    owner: root
+    group: root
+    mode: "0644"
+    validate: smartd -q onecheck -c %s
+  notify: Restart smartd
+
+- name: Create pushover notification script
+  ansible.builtin.template:
+    src: templates/10pushover-notify
+    dest: /etc/smartmontools/run.d/10pushover-notify
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart smartd
+
+- name: Enable smartd
+  ansible.builtin.service:
+    name: smartd.service
+    state: started
+    enabled: true
