@@ -6,5 +6,6 @@
     ```bash
     ansible-playbook site.yaml -i inventory.yaml
     ```
+4. It will reboot the system at the end, so you will need to unlock it before continuing.
 
 🎉 You can continue to [storage setup](./03_storage.md).

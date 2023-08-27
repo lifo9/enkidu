@@ -1,0 +1,118 @@
+- name: 1.1.1 Ensure unused filesystems are disabled
+  block:
+    - name: Ensure unused filesystems are disabled
+      ansible.builtin.lineinfile:
+        dest: /etc/modprobe.d/CIS.conf
+        regexp: "^(#)?install {{ item }}(\\s|$)"
+        line: "install {{ item }} /bin/false"
+        state: present
+        owner: root
+        group: root
+        mode: "0644"
+        create: true
+      loop: "{{ disabled_filesystems }}"
+    - name: Ensure unused filesystems are disabled | modprobe
+      community.general.modprobe:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ disabled_filesystems }}"
+
+- name: 1.1.2 Configure /tmp
+  block:
+    - name: Create tmp.mount service
+      ansible.builtin.copy:
+        src: /usr/share/systemd/tmp.mount
+        dest: /etc/systemd/system/tmp.mount
+        owner: root
+        group: root
+        mode: "0644"
+        force: true
+        remote_src: true
+    - name: Ensure tmp.mount service is configured
+      ansible.builtin.lineinfile:
+        dest: /etc/systemd/system/tmp.mount
+        regexp: "^Options=mode="
+        line: "Options=mode=1777,strictatime,nosuid,nodev,noexec,size=50%%,nr_inodes=1m"
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: true
+    - name: Enable and start tmp.mount service
+      ansible.builtin.systemd:
+        name: tmp.mount
+        enabled: true
+        masked: false
+        state: started
+
+- name: 1.1.9 Disable Automounting
+  block:
+    - name: Disable autofs service
+      ansible.builtin.service:
+        name: autofs
+        enabled: false
+      when: "'autofs' in services"
+
+    - name: Ensure autofs package is not installed
+      ansible.builtin.apt:
+        name: autofs
+        state: absent
+        purge: true
+
+- name: 1.5.1 Ensure address space layout randomization (ASLR) is enabled
+  ansible.posix.sysctl:
+    name: kernel.randomize_va_space
+    value: "2"
+    state: present
+    reload: true
+    sysctl_set: true
+    ignoreerrors: true
+
+- name: 1.5.3 Ensure Automatic Error Reporting is not enabled
+  ansible.builtin.systemd:
+    name: apport
+    enabled: false
+  when: "'apport' in services"
+
+- name: 1.5.4 Ensure core dumps are restricted
+  block:
+    - name: 1.5.4 Ensure core dumps are restricted | sysctl
+      ansible.posix.sysctl:
+        name: fs.suid_dumpable
+        value: "0"
+        state: present
+        reload: true
+        sysctl_set: true
+        ignoreerrors: true
+    - name: 1.5.4 Ensure core dumps are restricted | limits.conf
+      ansible.builtin.lineinfile:
+        dest: /etc/security/limits.conf
+        line: "*                hard    core            0"
+        regexp: '(^#)?\*\s+hard\s+core\s+[0-9]+'
+        state: present
+        create: true
+        owner: root
+        group: root
+        mode: "0644"
+        insertbefore: "# End of file"
+    - name: 1.5.4 Ensure core dumps are restricted | apt
+      ansible.builtin.apt:
+        name: systemd-coredump
+        state: absent
+
+- name: 1.7.1 Ensure message of the day is configured properly
+  ansible.builtin.copy:
+    src: files/motd
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: 1.7.5 Ensure permissions on /etc/issue and /etc/issue.net are configured
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: file
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - /etc/issue
+    - /etc/issue.net

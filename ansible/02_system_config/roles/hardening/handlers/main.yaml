@@ -1,0 +1,13 @@
+- name: Reload timesyncd
+  ansible.builtin.service:
+    name: systemd-timesyncd
+    state: restarted
+
+- name: Update GRUB
+  ansible.builtin.command: update-grub
+  changed_when: false
+
+- name: Reload sshd
+  ansible.builtin.service:
+    name: sshd
+    state: restarted

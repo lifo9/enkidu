@@ -24,6 +24,7 @@
   loop:
     - nut.conf
     - ups.conf
+    - upsd.conf
     - upsd.users
     - upsmon.conf
   notify: Restart NUT services
@@ -35,12 +36,12 @@
     owner: root
     group: root
     mode: "0755"
-  notify: Restart NUT services
 
 - name: Enable NUT services
   ansible.builtin.systemd:
     name: "{{ item }}"
     enabled: true
+    state: restarted
   loop:
     - nut-server
     - nut-client

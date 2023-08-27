@@ -1,0 +1,23 @@
+# Inspired by CIS Benchmark (https://downloads.cisecurity.org/#/)
+- name: Update sources
+  ansible.builtin.apt:
+    force_apt_get: true
+    update_cache: true
+
+- name: Get the list of services
+  ansible.builtin.service_facts:
+
+- name: CIS - Initial setup
+  ansible.builtin.import_tasks: 01_initial_setup.yaml
+
+- name: CIS - Services
+  ansible.builtin.import_tasks: 02_services.yaml
+
+- name: CIS - Network configuration
+  ansible.builtin.import_tasks: 03_network_configuration.yaml
+
+- name: CIS - Access, Authentication and Authorization
+  ansible.builtin.import_tasks: 04_access.yaml
+
+- name: CIS - System Maintenance
+  ansible.builtin.import_tasks: 05_system_maintenance.yaml

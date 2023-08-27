@@ -1,2 +1,3 @@
 pushover_app_key: "{{ lookup('env', 'PUSHOVER_APP_KEY') }}"
 pushover_api_key: "{{ lookup('env', 'PUSHOVER_API_KEY') }}"
+common_packages: [htop, mc]

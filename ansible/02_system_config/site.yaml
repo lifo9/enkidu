@@ -4,5 +4,15 @@
   vars_files:
     - vars/main.yaml
   roles:
+    - role: hardening
     - role: pushover
     - role: ups
+    - role: common_packages
+  tasks:
+    - name: Reboot
+      ansible.builtin.reboot:
+        reboot_timeout: 0
+      async: 0
+      poll: 0
+      register: reboot
+      ignore_errors: true

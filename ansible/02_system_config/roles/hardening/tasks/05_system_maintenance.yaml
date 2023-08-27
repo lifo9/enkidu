@@ -1,0 +1,101 @@
+- name: 6.1.1 Ensure permissions on /etc/passwd are configured
+  ansible.builtin.file:
+    dest: /etc/passwd
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: 6.1.2 Ensure permissions on /etc/passwd- are configured
+  ansible.builtin.file:
+    dest: /etc/passwd-
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: 6.1.3 Ensure permissions on /etc/group are configured
+  ansible.builtin.file:
+    dest: /etc/group
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: 6.1.4 Ensure permissions on /etc/group- are configured
+  ansible.builtin.file:
+    dest: /etc/group-
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: 6.1.5 Ensure permissions on /etc/shadow are configured, with group shadow'
+  ansible.builtin.file:
+    dest: /etc/shadow
+    owner: root
+    group: shadow
+    mode: "0640"
+
+- name: 6.1.6 Ensure permissions on /etc/shadow- are configured
+  ansible.builtin.file:
+    dest: /etc/shadow-
+    owner: root
+    group: shadow
+    mode: "0600"
+
+- name: 6.1.7 Ensure permissions on /etc/gshadow are configured
+  ansible.builtin.file:
+    dest: /etc/gshadow
+    owner: root
+    group: shadow
+    mode: "0640"
+
+- name: 6.1.8 Ensure permissions on /etc/gshadow- are configured
+  ansible.builtin.file:
+    dest: /etc/gshadow-
+    owner: root
+    group: shadow
+    mode: "0640"
+
+- name: 6.1.9 Ensure no world writable files exist
+  block:
+    - name: 6.1.9 Ensure no world writable files exist | find files
+      ansible.builtin.shell: |
+        set -o pipefail | df --local -P | awk '{if (NR!=1) print $6}' | sudo xargs -I '{}' find '{}' -xdev -type f -perm -0002 2> /dev/null && true || true
+      register: output_6_1_9
+      changed_when: false
+    - name: 6.1.9 Ensure no world writable files exist | fix permission
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: "o-w"
+      with_items: "{{ output_6_1_9.stdout_lines }}"
+
+- name: 6.2.1 Ensure accounts in /etc/passwd use shadowed passwords
+  ansible.builtin.shell: |
+    sh -c "sed -e 's/^\([a-zA-Z0-9_]*\):[^:]*:/\1:x:/' -i /etc/passwd"
+  changed_when: false
+
+- name: Ensure sticky bit is set on all world-writable directories
+  ansible.builtin.shell: "set -o pipefail | df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002"
+  register: sticky_bit
+  changed_when: false
+
+- name: Checking or Setting permissions on the world-writable directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: a+t
+  with_items:
+    - "{{ sticky_bit.stdout_lines }}"
+
+- name: Install unattended-upgrades
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: present
+
+- name: Configure unattended-upgrades
+  ansible.builtin.copy:
+    src: "files/{{ item }}"
+    dest: "/etc/apt/apt.conf.d/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - 50unattended-upgrades
+    - 20auto-upgrades
