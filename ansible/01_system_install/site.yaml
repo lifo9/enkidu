@@ -18,8 +18,7 @@
   vars:
     server_port: "{{ lookup('env', 'SERVER_PORT') }}"
     hostname: "{{ lookup('env', 'HOSTNAME') }}"
-    timezone_region: "{{ lookup('env', 'TIMEZONE_REGION') }}"
-    timezone_city: "{{ lookup('env', 'TIMEZONE_CITY') }}"
+    timezone: "{{ lookup('env', 'TIMEZONE') }}"
     authorized_key: "{{ lookup('env', 'AUTHORIZED_KEY') }}"
     user_name: "{{ lookup('env', 'USER_NAME') }}"
     user_password: "{{ lookup('env', 'USER_PASSWORD') }}"

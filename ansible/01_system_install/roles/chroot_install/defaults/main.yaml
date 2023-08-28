@@ -1,7 +1,6 @@
 debian_version: "{{ ansible_distribution_release }}"
 hostname: "server"
-timezone_region: "Europe"
-timezone_city: "Bratislava"
+timezone: "Europe/Bratislava"
 authorized_key: "ssh-ed25519 AAAA..."
 user_name: "user"
 user_password: "user_password"

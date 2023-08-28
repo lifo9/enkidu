@@ -70,19 +70,9 @@
     value: en_US.UTF-8 UTF-8
     vtype: multiselect
 
-- name: Set timezone region
-  ansible.builtin.debconf:
-    name: tzdata
-    question: tzdata/Areas
-    value: "{{ timezone_region }}"
-    vtype: select
-
-- name: Set timezone city
-  ansible.builtin.debconf:
-    name: tzdata
-    question: tzdata/Zones/{{ timezone_region }}}
-    value: "{{ timezone_city }}"
-    vtype: select
+- name: "Set timezone to {{ timezone }}"
+  community.general.timezone:
+    name: "{{ timezone }}"
 
 - name: Ensure ZFS update rebuilds all initramfs
   ansible.builtin.copy:
