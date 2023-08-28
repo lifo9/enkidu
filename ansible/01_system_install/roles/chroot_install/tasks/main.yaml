@@ -56,19 +56,19 @@
     name: os-prober
     state: absent
 
-- name: Set default locale to en_US.UTF-8
-  ansible.builtin.debconf:
-    name: locales
-    question: locales/default_environment_locale
-    value: en_US.UTF-8
-    vtype: select
+- name: Ensure the locale exists
+  community.general.locale_gen:
+    name: en_US.UTF-8
+    state: present
 
-- name: Configure locales to generate
-  ansible.builtin.debconf:
-    name: locales
-    question: locales/locales_to_be_generated
-    value: en_US.UTF-8 UTF-8
-    vtype: multiselect
+- name: Set as default locale
+  ansible.builtin.command: localectl set-locale LANG=en_US.UTF-8
+  changed_when: false
+
+- name: Add locale to /etc/default/locale
+  ansible.builtin.lineinfile:
+    path: /etc/default/locale
+    line: "LANG=en_US.UTF-8"
 
 - name: "Set timezone to {{ timezone }}"
   community.general.timezone:
