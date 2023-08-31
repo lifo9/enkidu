@@ -1,0 +1,23 @@
+- name: ZFS configuration fix
+  hosts: server
+  become: true
+  tasks:
+    - name: Patch /usr/share/initramfs-tools/scripts/zfs
+      ansible.posix.patch:
+        src: files/zfs_hook.patch
+        dest: /usr/share/initramfs-tools/hooks/zfs
+        ignore_whitespace: true
+
+    - name: Patch /usr/share/initramfs-tools/scripts/zfs
+      ansible.posix.patch:
+        src: files/zfs_script.patch
+        dest: /usr/share/initramfs-tools/scripts/zfs
+        ignore_whitespace: true
+
+    - name: Apply /etc/default/zfs
+      ansible.builtin.template:
+        src: files/zfs_default
+        dest: /etc/default/zfs
+        owner: root
+        group: root
+        mode: "0644"

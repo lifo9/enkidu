@@ -1,0 +1,17 @@
+--- /usr/share/initramfs-tools/scripts/zfs.old  2023-08-31 20:53:18.358954976 +0200
++++ /usr/share/initramfs-tools/scripts/zfs      2023-08-31 20:55:15.331409491 +0200
+@@ -908,6 +908,15 @@
+                ZFS_RPOOL="${pool}"
+        fi
+
++        for add_zpool in $ZFS_INITRD_ADDITIONAL_DATASETS; do
++                add_zpool_base="${add_zpool%%/*}"
++
++                if [ "$add_zpool_base" != "$ZFS_RPOOL" ]
++                then
++                        import_pool "${add_zpool_base}"
++                fi
++        done
++
+        # ----------------------------------------------------------------
+        # P R E P A R E   R O O T   F I L E S Y S T E M

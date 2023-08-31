@@ -1,0 +1,11 @@
+--- /usr/share/initramfs-tools/hooks/zfs.old    2023-08-31 20:59:14.028411128 +0200
++++ /usr/share/initramfs-tools/hooks/zfs        2023-08-31 20:59:42.508534629 +0200
+@@ -38,7 +38,7 @@
+ fi
+
+ copy_file config "/etc/hostid"
+-copy_file cache  "/etc/zfs/zpool.cache"
++copy_file cache  "/etc/zfs/zpool.cache" "/etc/zfs/zpool.cache-initrd"
+ copy_file config "/etc/default/zfs"
+ copy_file config "/etc/zfs/zfs-functions"
+ copy_file config "/etc/zfs/vdev_id.conf"
