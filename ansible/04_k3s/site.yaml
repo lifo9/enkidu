@@ -1,0 +1,11 @@
+- name: K3S Setup
+  hosts: server
+  become: true
+  vars_files:
+    - vars/main.yaml
+  roles:
+    - storage
+    - firewall
+    - download
+    - k3s
+    - config

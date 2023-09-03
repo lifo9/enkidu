@@ -1,0 +1,15 @@
+kube_dir: /kube
+kube_data_dir: "{{ kube_dir }}/kube_data"
+kube_app_data_dir: "{{ kube_dir }}/app_data"
+k3s_server_location: "{{ kube_data_dir }}/k3s"
+master_ip: "{{ hostvars['server']['ansible_host'] }}"
+datasets:
+  - name: kube
+    properties:
+      mountpoint: "{{ kube_dir }}"
+  - name: kube/kube_data
+    properties:
+      mountpoint: "{{ kube_data_dir }}"
+  - name: kube/app_data
+    properties:
+      mountpoint: "{{ kube_app_data_dir }}"

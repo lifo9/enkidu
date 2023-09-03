@@ -1,0 +1,6 @@
+- name: Create Kubernetes datasets
+  community.general.zfs:
+    name: rpool/{{ item.name }}
+    state: present
+    extra_zfs_properties: "{{ item.properties | default({}) }}"
+  loop: "{{ datasets }}"

@@ -1,0 +1,10 @@
+datasets:
+  - name: kube
+    properties:
+      mountpoint: /kube
+  - name: kube/kube_data
+    properties:
+      mountpoint: /kube/kube_data
+  - name: kube/app_data
+    properties:
+      mountpoint: /kube/app_data
