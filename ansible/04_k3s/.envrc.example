@@ -8,3 +8,8 @@ export ANSIBLE_HOST="XXX.XXX.XXX.XXX"
 export ANSIBLE_PORT="22"
 export ANSIBLE_USER="user"
 export ANSIBLE_SUDO_PASS="password"
+
+export CLOUDFLARE_API_TOKEN="xxx"
+export CLOUDFLARE_EMAIL="name@domain.tld"
+export LETSENCRYPT_EMAIL="name@domain.tld"
+export CERTIFICATE_DOMAIN="domain.tld"

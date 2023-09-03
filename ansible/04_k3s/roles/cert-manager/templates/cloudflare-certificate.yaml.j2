@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-cert
+  namespace: kube-system
+spec:
+  secretName: wildcard-secret
+  dnsNames:
+    - "*.{{ certificate_domain }}"
+    - "{{ certificate_domain }}"
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt

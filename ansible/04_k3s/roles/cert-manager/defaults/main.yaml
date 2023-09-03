@@ -1,0 +1,4 @@
+cloudflare_api_token: "xyz"
+letsencrypt_email: name@domain.tld
+cloudflare_email: name@domain.tld
+certificate_domain: example.tld

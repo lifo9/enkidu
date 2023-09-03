@@ -10,4 +10,3 @@
     - { rule: "allow", port: "6443", proto: "tcp", from_ip: "any", to_ip: "any", direction: "in" }
     - { rule: "allow", port: "", proto: "any", from_ip: "10.42.0.0/16", to_ip: "any", direction: "in" }
     - { rule: "allow", port: "", proto: "any", from_ip: "10.43.0.0/16", to_ip: "any", direction: "in" }
-

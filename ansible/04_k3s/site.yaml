@@ -9,3 +9,4 @@
     - download
     - k3s
     - config
+    - cert-manager

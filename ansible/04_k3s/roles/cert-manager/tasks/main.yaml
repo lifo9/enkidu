@@ -1,0 +1,29 @@
+- name: Install cert-manager
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    src: https://github.com/jetstack/cert-manager/releases/latest/download/cert-manager.yaml
+
+- name: Create Cloudflare API Token Secret
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    template: templates/cloudflare-token-secret.yaml.j2
+
+- name: Create Cloudflare ClusterIssuer
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    template: templates/cloudflare-certificate-issuer.yaml.j2
+
+- name: Create wildcard certificate
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    template: templates/cloudflare-certificate.yaml.j2
+
+- name: Configure Traefik to use the generated certificate by default
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    template: templates/default-traefik-cert.yaml.j2
