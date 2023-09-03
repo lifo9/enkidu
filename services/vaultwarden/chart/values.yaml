@@ -1,0 +1,38 @@
+name: vaultwarden
+namespace: vaultwarden
+image: vaultwarden/server
+tag: latest
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1001
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 1Gi
+  requests:
+    cpu: 50m
+    memory: 256Mi
+
+network:
+  service_port_http: 8000
+  service_port_websocket: 8001
+
+storage:
+  node_name: node-name
+  path: /kube_data/vaultwarden
+
+env:
+  websocket_enabled: "true"
+  signups_allowed: "true"
+  domain: sub.domain.tld
+  smtp_host: smtp.domain.tld
+  smtp_from: name@domain.tld
+  smtp_port: "587"
+  smtp_ssl: "true"
+  smtp_security: "force_tls"
+  smtp_username: username
+  smtp_password: password
+  admin_token: xyz

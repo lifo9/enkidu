@@ -1,0 +1,18 @@
+#!/bin/sh
+export BW_SESSION=$(bw unlock --raw)
+[ -z "$BW_SESSION" ] && exit 1
+BW_COMMAND="bw --session $BW_SESSION"
+unset BW_SESSION
+
+export ANSIBLE_HOST="XXX.XXX.XXX.XXX"
+export ANSIBLE_PORT="22"
+export ANSIBLE_USER="user"
+export ANSIBLE_SUDO_PASS="password"
+
+export DOMAIN="sub.domain.tld"
+export SMTP_HOST=smtp.domain.tld
+export SMTP_FROM=name@domain.tld
+export SMTP_PORT="587"
+export SMTP_USERNAME=username
+export SMTP_PASSWORD=password
+export ADMIN_TOKEN=xyz

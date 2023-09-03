@@ -1,0 +1,9 @@
+kube_app_data: /kube/app_data
+domain: "{{ lookup('env', 'DOMAIN') }}"
+smtp_host: "{{ lookup('env', 'SMTP_HOST') }}"
+smtp_from: "{{ lookup('env', 'SMTP_FROM') }}"
+smtp_port: "{{ lookup('env', 'SMTP_PORT') }}"
+smtp_username: "{{ lookup('env', 'SMTP_USERNAME') }}"
+smtp_password: "{{ lookup('env', 'SMTP_PASSWORD') }}"
+admin_token: "{{ lookup('env', 'ADMIN_TOKEN') }}"
+

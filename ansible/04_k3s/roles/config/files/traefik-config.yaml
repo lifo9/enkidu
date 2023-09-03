@@ -12,6 +12,3 @@ spec:
         expose: false
       websecure:
         exposedPort: 443
-    tlsOptions:
-      default:
-        sniStrict: true

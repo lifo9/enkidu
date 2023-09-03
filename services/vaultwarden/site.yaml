@@ -1,0 +1,66 @@
+- name: Vaultwarden
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create vaultwarden user
+      become: true
+      ansible.builtin.user:
+        name: vaultwarden
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u vaultwarden
+      register: vaultwarden_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g vaultwarden
+      register: vaultwarden_gid
+      changed_when: false
+
+    - name: Create vaultwarden k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: vaultwarden
+        namespace: vaultwarden
+        state: present
+
+    - name: Create vaultwarden app data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/vaultwarden"
+        state: directory
+        owner: vaultwarden
+        group: vaultwarden
+        mode: "0700"
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart
+        dest: /tmp/
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: templates/values.yaml.j2
+        dest: /tmp/chart/vaultwarden-values.yaml
+        mode: "0600"
+
+    - name: Install vaultwarden helm chart
+      kubernetes.core.helm:
+        chart_ref: /tmp/chart
+        name: "vaultwarden"
+        namespace: "vaultwarden"
+        state: present
+        values_files:
+          - /tmp/chart/vaultwarden-values.yaml
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: /tmp/chart

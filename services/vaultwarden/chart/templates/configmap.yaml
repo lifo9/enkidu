@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+data:
+  WEBSOCKET_ENABLED: "{{ .Values.env.websocket_enabled }}"
+  SIGNUPS_ALLOWED: "{{ .Values.env.signups_allowed }}"
+  DOMAIN: "https://{{ .Values.env.domain }}"
+  SMTP_HOST: "{{ .Values.env.smtp_host }}"
+  SMTP_FROM: "{{ .Values.env.smtp_from }}"
+  SMTP_PORT: "{{ .Values.env.smtp_port }}"
+  SMTP_SSL: "{{ .Values.env.smtp_ssl }}"
+  SMTP_SECURITY: "{{ .Values.env.smtp_security }}"
+  ROCKET_PORT: "8080"
