@@ -39,21 +39,27 @@
         group: vaultwarden
         mode: "0700"
 
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: vaultwarden
+
     - name: Copy helm chart to target
       ansible.builtin.copy:
-        src: chart
-        dest: /tmp/
+        src: chart/
+        dest: "{{ build_dir.path }}"
         mode: "0700"
 
     - name: Create values.yaml from template
       ansible.builtin.template:
         src: chart/values.yaml
-        dest: /tmp/chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
         mode: "0600"
 
     - name: Install vaultwarden helm chart
       kubernetes.core.helm:
-        chart_ref: /tmp/chart
+        chart_ref: "{{ build_dir.path }}"
         name: "vaultwarden"
         namespace: "vaultwarden"
         state: present
@@ -61,4 +67,4 @@
     - name: Cleanup
       ansible.builtin.file:
         state: absent
-        path: /tmp/chart
+        path: "{{ build_dir.path }}"
