@@ -20,6 +20,11 @@
     name: python3-pip
     state: present
 
+- name: Install git
+  ansible.builtin.apt:
+    name: git
+    state: present
+
 - name: Install required Python libraries
   become: false
   ansible.builtin.pip:
@@ -43,3 +48,9 @@
     remote_src: true
   args:
     creates: /usr/local/bin/helm
+
+- name: Install Helm diff plugin
+  become: false
+  kubernetes.core.helm_plugin:
+    plugin_path: https://github.com/databus23/helm-diff
+    state: present
