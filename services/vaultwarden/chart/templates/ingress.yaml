@@ -6,6 +6,8 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/buffering: |
+      maxrequestbodybytes: 134217728
 spec:
   entryPoints:
   - websecure
