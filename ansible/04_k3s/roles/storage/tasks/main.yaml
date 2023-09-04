@@ -4,3 +4,55 @@
     state: present
     extra_zfs_properties: "{{ item.properties | default({}) }}"
   loop: "{{ datasets }}"
+
+- name: Update sources
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install sanoid
+  ansible.builtin.apt:
+    name: sanoid
+    state: present
+
+- name: Create sanoid config dir
+  ansible.builtin.file:
+    path: "/etc/sanoid"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Configure sanoid
+  ansible.builtin.template:
+    src: templates/sanoid.conf.j2
+    dest: /etc/sanoid/sanoid.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure syncoid.service
+  ansible.builtin.template:
+    src: templates/syncoid.service
+    dest: /etc/systemd/system/syncoid.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure syncoid.timer
+  ansible.builtin.template:
+    src: templates/syncoid.timer
+    dest: /etc/systemd/system/syncoid.timer
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Restart and enable sanoid / syncoid services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    daemon_reload: true
+    enabled: true
+  loop:
+    - sanoid.service
+    - syncoid.service
+    - syncoid.timer

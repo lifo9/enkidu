@@ -1,0 +1,10 @@
+[Unit]
+Description=Runs syncoid
+Wants=syncoid.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/syncoid --recursive rpool/{{ datasets[0].name }} {{ backup_dataset }}/{{ datasets[0].name }}
+
+[Install]
+WantedBy=multi-user.target

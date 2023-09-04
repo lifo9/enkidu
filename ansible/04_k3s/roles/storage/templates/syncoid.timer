@@ -1,0 +1,9 @@
+[Unit]
+Description=Runs syncoid
+
+[Timer]
+OnCalendar=*-*-* *:10:00
+Unit=syncoid.service
+
+[Install]
+WantedBy=timers.target

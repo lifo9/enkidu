@@ -1,0 +1,22 @@
+#######################
+# K8S App Data Backup #
+#######################
+
+[rpool/{{ datasets[0].name }}]
+  use_template = daily
+
+[{{ backup_dataset }}]
+  use_template = daily
+  autosnap = no
+  autoprune = yes
+
+#############
+# Templates #
+#############
+
+[template_daily]
+  daily = 30
+  monthly = 6
+  recursive = yes
+  autosnap = yes
+  autoprune = yes

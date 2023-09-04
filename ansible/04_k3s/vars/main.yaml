@@ -7,6 +7,7 @@ cloudflare_api_token: "{{ lookup('env', 'CLOUDFLARE_API_TOKEN') }}"
 letsencrypt_email: "{{ lookup('env', 'LETSENCRYPT_EMAIL') }}"
 cloudflare_email: "{{ lookup('env', 'CLOUDFLARE_EMAIL') }}"
 certificate_domain: "{{ lookup('env', 'CERTIFICATE_DOMAIN') }}"
+backup_dataset: tank/storage/backup
 datasets:
   - name: kube
     properties:

@@ -8,3 +8,5 @@ datasets:
   - name: kube/app_data
     properties:
       mountpoint: /kube/app_data
+
+backup_dataset: tank/storage/backup
