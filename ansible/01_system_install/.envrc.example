@@ -1,15 +1,12 @@
 #!/bin/sh
-export BW_SESSION=$(bw unlock --raw)
-[ -z "$BW_SESSION" ] && exit 1
-BW_COMMAND="bw --session $BW_SESSION"
-unset BW_SESSION
+source ../../helpers/bitwarden.sh
 
-export SERVER_IP="XXX.XXX.XXX.XXX"
-export SERVER_PORT="22"
-export CHROOT_PORT="23"
-export ENCRYPTION_PASSPHRASE="$($BW_COMMAND get password 'server - crypt')"
-export HOSTNAME="server"
-export TIMEZONE="Europe/Bratislava"
-export AUTHORIZED_KEY="ssh-rsa XXXXXXXXXXXXXXXXXXXXXXXXX"
-export USER_NAME="user"
-export USER_PASSWORD="xyz"
+export SERVER_IP="$(get_custom_field 'enkidu' 'SERVER_IP')"
+export SERVER_PORT="$(get_custom_field 'enkidu' 'SERVER_PORT')"
+export CHROOT_PORT="$(get_custom_field 'enkidu' 'CHROOT_PORT')"
+export ENCRYPTION_PASSPHRASE="$(get_custom_field 'enkidu' 'ENCRYPTION_PASSPHRASE')"
+export HOSTNAME="$(get_custom_field 'enkidu' 'HOSTNAME')"
+export TIMEZONE="$(get_custom_field 'enkidu' 'TIMEZONE')"
+export AUTHORIZED_KEY="$(get_custom_field 'mbp - ssh' 'AUTHORIZED_KEY')"
+export USER_NAME="$(get_username 'enkidu')"
+export USER_PASSWORD="$(get_password 'enkidu')"
