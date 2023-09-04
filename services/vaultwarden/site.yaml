@@ -47,8 +47,8 @@
 
     - name: Create values.yaml from template
       ansible.builtin.template:
-        src: templates/values.yaml.j2
-        dest: /tmp/chart/vaultwarden-values.yaml
+        src: chart/values.yaml
+        dest: /tmp/chart/values.yaml
         mode: "0600"
 
     - name: Install vaultwarden helm chart
@@ -57,8 +57,6 @@
         name: "vaultwarden"
         namespace: "vaultwarden"
         state: present
-        values_files:
-          - /tmp/chart/vaultwarden-values.yaml
 
     - name: Cleanup
       ansible.builtin.file:

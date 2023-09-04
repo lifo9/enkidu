@@ -1,12 +1,13 @@
 name: vaultwarden
 namespace: vaultwarden
-image: vaultwarden/server
-tag: latest
+image:
+  repository: vaultwarden/server
+  tag: 1.29.2-alpine
 
 securityContext:
   runAsNonRoot: true
-  runAsUser: 1000
-  fsGroup: 1001
+  runAsUser: "{{ vaultwarden_uid.stdout }}"
+  fsGroup: "{{ vaultwarden_gid.stdout }}"
 
 resources:
   limits:
@@ -21,18 +22,18 @@ network:
   service_port_websocket: 8001
 
 storage:
-  node_name: node-name
-  path: /kube_data/vaultwarden
+  node_name: "{{ ansible_hostname }}"
+  path: "{{ kube_app_data }}/vaultwarden"
 
 env:
   websocket_enabled: "true"
-  signups_allowed: "true"
-  domain: sub.domain.tld
-  smtp_host: smtp.domain.tld
-  smtp_from: name@domain.tld
-  smtp_port: "587"
+  signups_allowed: "false"
+  domain: "{{ domain }}"
+  smtp_host: "{{ smtp_host }}"
+  smtp_from: "{{ smtp_from }}"
+  smtp_port: "{{ smtp_port }}"
   smtp_ssl: "true"
   smtp_security: "force_tls"
-  smtp_username: username
-  smtp_password: password
-  admin_token: xyz
+  smtp_username: "{{ smtp_username }}"
+  smtp_password: "{{ smtp_password }}"
+  admin_token: "{{ admin_token }}"
