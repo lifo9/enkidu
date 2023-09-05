@@ -1,0 +1,13 @@
+#!/bin/sh
+source ../../helpers/bitwarden.sh
+
+export ANSIBLE_HOST="$(get_custom_field 'enkidu' 'SERVER_IP')"
+export ANSIBLE_PORT="$(get_custom_field 'enkidu' 'SERVER_PORT')"
+export ANSIBLE_USER="$(get_username 'enkidu')"
+export ANSIBLE_SUDO_PASS="$(get_password 'enkidu')"
+
+export DOMAIN="$(get_custom_field 'navidrome' 'DOMAIN')"
+export ND_SCANSCHEDULE=$(get_custom_field 'navidrome' 'ND_SCANSCHEDULE')
+export ND_LOGLEVEL=$(get_custom_field 'navidrome' 'ND_LOGLEVEL')
+export ND_SESSIONTIMEOUT=$(get_custom_field 'navidrome' 'ND_SESSIONTIMEOUT')
+export MUSIC_PATH=$(get_custom_field 'navidrome' 'MUSIC_PATH')

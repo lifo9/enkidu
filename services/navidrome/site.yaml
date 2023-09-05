@@ -1,0 +1,70 @@
+- name: Navidrome
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create navidrome user
+      become: true
+      ansible.builtin.user:
+        name: navidrome
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u navidrome
+      register: navidrome_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g navidrome
+      register: navidrome_gid
+      changed_when: false
+
+    - name: Create navidrome k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: navidrome
+        namespace: navidrome
+        state: present
+
+    - name: Create navidrome app data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/navidrome"
+        state: directory
+        owner: navidrome
+        group: navidrome
+        mode: "0700"
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: navidrome
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install navidrome helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "navidrome"
+        namespace: "navidrome"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"

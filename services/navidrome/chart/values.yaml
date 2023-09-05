@@ -1,0 +1,34 @@
+name: navidrome
+namespace: navidrome
+image:
+  repository: deluan/navidrome
+  tag: 0.49.3
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: {{ navidrome_uid.stdout }}
+  fsGroup: {{ navidrome_gid.stdout }}
+  capabilities:
+    drop:
+      - all
+resources:
+  limits:
+    cpu: 300m
+    memory: 1Gi
+  requests:
+    cpu: 50m
+    memory: 256Mi
+
+network:
+  service_port_http: 8002
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/navidrome"
+  music_path: "{{ music_path }}"
+
+env:
+  domain: "{{ domain }}"
+  nd_scanschedule: "{{ nd_scanschedule }}"
+  nd_loglevel: "{{ nd_loglevel }}"
+  nd_sessiontimeout: "{{ nd_sessiontimeout }}"

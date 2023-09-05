@@ -1,0 +1,60 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Values.name }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}
+        ports:
+        - containerPort: 4533
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: http
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /music
+          name: music
+          readOnly: true
+        {{- with .Values.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}
+      - name: music
+        hostPath:
+          path: {{ .Values.storage.music_path }}
+          type: Directory
