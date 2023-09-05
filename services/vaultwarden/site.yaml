@@ -68,3 +68,11 @@
       ansible.builtin.file:
         state: absent
         path: "{{ build_dir.path }}"
+
+    - name: Create uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "Vaultwarden uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Vaultwarden Web Vault" "{{ uptime_endpoint }}"'

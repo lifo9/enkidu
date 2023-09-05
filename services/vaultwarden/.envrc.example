@@ -13,3 +13,4 @@ export SMTP_PORT="$(get_custom_field 'vaultwarden' 'SMTP_PORT')"
 export SMTP_USERNAME="$(get_custom_field 'vaultwarden' 'SMTP_USERNAME')"
 export SMTP_PASSWORD="$(get_custom_field 'vaultwarden' 'SMTP_PASSWORD')"
 export ADMIN_TOKEN="$(get_custom_field 'vaultwarden' 'ADMIN_TOKEN')"
+export UPTIME_ENDPOINT=$(get_custom_field 'vaultwarden' 'UPTIME_ENDPOINT')

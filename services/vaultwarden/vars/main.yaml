@@ -6,4 +6,4 @@ smtp_port: "{{ lookup('env', 'SMTP_PORT') }}"
 smtp_username: "{{ lookup('env', 'SMTP_USERNAME') }}"
 smtp_password: "{{ lookup('env', 'SMTP_PASSWORD') }}"
 admin_token: "{{ lookup('env', 'ADMIN_TOKEN') }}"
-
+uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
