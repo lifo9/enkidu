@@ -1,0 +1,33 @@
+- name: Create uptimepush user
+  ansible.builtin.user:
+    name: uptimepush
+    state: present
+    shell: /usr/sbin/nologin
+    system: false
+    create_home: false
+
+- name: Allow specific uptimepush to use crontab
+  ansible.builtin.lineinfile:
+    path: /etc/cron.allow
+    line: "uptimepush"
+    owner: root
+    group: root
+    mode: "0600"
+    create: true
+
+- name: Update sources
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install curl
+  ansible.builtin.apt:
+    name: "curl"
+    state: present
+
+- name: Copy uptime-push script
+  ansible.builtin.copy:
+    src: files/uptime-push.sh
+    dest: "/usr/local/bin/uptime-push"
+    owner: root
+    group: root
+    mode: "0755"

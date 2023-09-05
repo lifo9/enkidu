@@ -9,6 +9,7 @@
     - role: ups
     - role: smart_monitoring
     - role: zfs_monitoring
+    - role: uptime_push
     - role: common_packages
   tasks:
     - name: Reboot
