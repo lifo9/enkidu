@@ -8,9 +8,7 @@ securityContext:
   runAsNonRoot: true
   runAsUser: {{ navidrome_uid.stdout }}
   fsGroup: {{ navidrome_gid.stdout }}
-  capabilities:
-    drop:
-      - all
+
 resources:
   limits:
     cpu: 300m
@@ -21,6 +19,7 @@ resources:
 
 network:
   service_port_http: 8002
+  ip_whitelist: "{{ ip_whitelist }}"
 
 storage:
   node_name: "{{ ansible_hostname }}"

@@ -12,6 +12,22 @@ spec:
   routes:
   - kind: Rule
     match: Host(`{{ .Values.env.domain }}`) && PathPrefix(`/`)
+    middlewares:
+      - name: {{ .Values.name }}-ipwhitelist
+        namespace: {{ .Values.namespace }}
     services:
     - name: {{ .Values.name }}
       port: {{ .Values.network.service_port_http }}
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.name }}-ipwhitelist
+  namespace: {{ .Values.namespace }}
+spec:
+  ipWhiteList:
+    sourceRange:
+    {{- range $ip := splitList "," .Values.network.ip_whitelist }}
+      - "{{ $ip }}"
+    {{- end }}

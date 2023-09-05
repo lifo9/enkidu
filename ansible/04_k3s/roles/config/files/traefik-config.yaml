@@ -12,3 +12,6 @@ spec:
         expose: false
       websecure:
         exposedPort: 443
+    service:
+      spec:
+        externalTrafficPolicy: Local
