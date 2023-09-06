@@ -1,0 +1,29 @@
+name: jellyfin
+namespace: jellyfin
+image:
+  repository: docker.io/jellyfin/jellyfin
+  tag: 10.8.10
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: {{ jellyfin_uid.stdout }}
+  fsGroup: {{ jellyfin_gid.stdout }}
+
+resources:
+  limits:
+    cpu: 1.0
+    memory: 4G
+  requests:
+    cpu: 0.5
+    memory: 2G
+
+network:
+  service_port_http: 8003
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/jellyfin"
+  media_path: "{{ media_path }}"
+
+env:
+  domain: "{{ domain }}"

@@ -6,8 +6,8 @@ image:
 
 securityContext:
   runAsNonRoot: true
-  runAsUser: "{{ vaultwarden_uid.stdout }}"
-  fsGroup: "{{ vaultwarden_gid.stdout }}"
+  runAsUser: {{ vaultwarden_uid.stdout }}
+  fsGroup: {{ vaultwarden_gid.stdout }}
 
 resources:
   limits:

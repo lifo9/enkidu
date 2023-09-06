@@ -1,0 +1,78 @@
+- name: Jellyfin
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create jellyfin user
+      become: true
+      ansible.builtin.user:
+        name: jellyfin
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u jellyfin
+      register: jellyfin_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g jellyfin
+      register: jellyfin_gid
+      changed_when: false
+
+    - name: Create jellyfin k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: jellyfin
+        namespace: jellyfin
+        state: present
+
+    - name: Create jellyfin app data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/jellyfin"
+        state: directory
+        owner: jellyfin
+        group: jellyfin
+        mode: "0700"
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: jellyfin
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install jellyfin helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "jellyfin"
+        namespace: "jellyfin"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"
+
+    - name: Create uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "jellyfin uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Jellyfin" "{{ uptime_endpoint }}"'
