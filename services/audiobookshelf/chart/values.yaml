@@ -1,0 +1,31 @@
+name: audiobookshelf
+namespace: audiobookshelf
+image:
+  repository: ghcr.io/advplyr/audiobookshelf
+  tag: 2.3.3
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: {{ audiobookshelf_uid.stdout }}
+  fsGroup: {{ audiobookshelf_gid.stdout }}
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1.5Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+
+network:
+  service_port_http: 13378
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/audiobookshelf"
+  audiobooks_path: "{{ audiobooks_path }}"
+  podcasts_path: "{{ podcasts_path }}"
+
+env:
+  domain: "{{ domain }}"

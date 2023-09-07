@@ -1,0 +1,6 @@
+kube_app_data: /kube/app_data
+domain: "{{ lookup('env', 'DOMAIN') }}"
+uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
+ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+audiobooks_path: "{{ lookup('env', 'AUDIOBOOKS_PATH') }}"
+podcasts_path: "{{ lookup('env', 'PODCASTS_PATH') }}"
