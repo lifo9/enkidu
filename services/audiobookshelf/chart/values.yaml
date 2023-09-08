@@ -12,10 +12,10 @@ securityContext:
 resources:
   limits:
     cpu: 500m
-    memory: 1.5Gi
+    memory: 2Gi
   requests:
     cpu: 200m
-    memory: 512Mi
+    memory: 1Gi
 
 network:
   service_port_http: 13378
