@@ -6,6 +6,5 @@
 version: 2
 updates:
   - package-ecosystem: "docker" # See documentation for possible values
-    directory: "/services" # Location of package manifests
     schedule:
       interval: "daily"
