@@ -5,6 +5,20 @@
 
 version: 2
 updates:
-  - package-ecosystem: "docker" # See documentation for possible values
+  # Dependabot does not support wildcards :(
+  - package-ecosystem: "docker"
+    directory: "/services/vaultwarden/chart"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/navidrome/chart"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/jellyfin/chart"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/audiobookshelf/chart"
     schedule:
       interval: "daily"
