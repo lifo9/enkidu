@@ -4,9 +4,13 @@
 
 [rpool/{{ datasets[0].name }}]
   use_template = daily
+  recursive = yes
+  autosnap = yes
+  autoprune = yes
 
 [{{ backup_dataset }}]
   use_template = daily
+  recursive = yes
   autosnap = no
   autoprune = yes
 
@@ -19,6 +23,3 @@
   daily = 30
   monthly = 6
   yearly = 0
-  recursive = yes
-  autosnap = yes
-  autoprune = yes
