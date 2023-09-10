@@ -1,0 +1,19 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/buffering: |
+      maxrequestbodybytes: 2147483648
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.env.domain }}`) && PathPrefix(`/`)
+    services:
+    - name: {{ .Values.name }}-app
+      port: {{ .Values.network.service_port_http }}

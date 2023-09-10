@@ -1,0 +1,85 @@
+name: photoprism
+namespace: photoprism
+photoprism:
+  image:
+    repository: docker.io/photoprism/photoprism
+    tag: 230719
+mariadb:
+  image:
+    repository: docker.io/mariadb
+    tag: 11.1.2
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: {{ photoprism_uid.stdout }}
+  fsGroup: {{ photoprism_gid.stdout }}
+
+resources:
+  photoprism:
+    limits:
+      cpu: 3
+      memory: 8Gi
+    requests:
+      cpu: 2
+      memory: 4Gi
+  mariadb:
+    limits:
+      cpu: 2
+      memory: 2Gi
+    requests:
+      cpu: 1
+      memory: 1Gi
+
+network:
+  service_port_http: {{ service_port_http }}
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/photoprism"
+  photos_path: "{{ photos_path }}"
+
+secrets:
+  mariadb:
+    MARIADB_PASSWORD: "{{ mariadb_password }}"
+    MARIADB_ROOT_PASSWORD: "{{ mariadb_root_password }}"
+  photoprism:
+    PHOTOPRISM_ADMIN_PASSWORD: "{{ photoprism_admin_password }}"
+    PHOTOPRISM_DATABASE_PASSWORD: "{{ mariadb_password }}"
+
+env:
+  domain: "{{ domain }}"
+  mariadb:
+    MARIADB_AUTO_UPGRADE: "{{ mariadb_auto_upgrade }}"
+    MARIADB_INITDB_SKIP_TZINFO: "{{ mariadb_initdb_skip_tzinfo }}"
+    MARIADB_DATABASE: "{{ mariadb_database }}"
+    MARIADB_USER: "{{ mariadb_user }}"
+  photoprism:
+    PHOTOPRISM_AUTH_MODE: "{{ photoprism_auth_mode }}"
+    PHOTOPRISM_SITE_URL: "{{ photoprism_site_url }}"
+    PHOTOPRISM_ORIGINALS_LIMIT: "{{ photoprism_originals_limit }}"
+    PHOTOPRISM_HTTP_COMPRESSION: "{{ photoprism_http_compression }}"
+    PHOTOPRISM_WORKERS: "{{ photoprism_workers }}"
+    PHOTOPRISM_LOG_LEVEL: "{{ photoprism_log_level }}"
+    PHOTOPRISM_READONLY: "{{ photoprism_readonly }}"
+    PHOTOPRISM_EXPERIMENTAL: "{{ photoprism_experimental }}"
+    PHOTOPRISM_DISABLE_CHOWN: "{{ photoprism_disable_chown }}"
+    PHOTOPRISM_DISABLE_WEBDAV: "{{ photoprism_disable_webdav }}"
+    PHOTOPRISM_DISABLE_SETTINGS: "{{ photoprism_disable_settings }}"
+    PHOTOPRISM_DISABLE_TENSORFLOW: "{{ photoprism_disable_tensorflow }}"
+    PHOTOPRISM_DISABLE_FACES: "{{ photoprism_disable_faces }}"
+    PHOTOPRISM_DISABLE_CLASSIFICATION: "{{ photoprism_disable_classification }}"
+    PHOTOPRISM_DISABLE_RAW: "{{ photoprism_disable_raw }}"
+    PHOTOPRISM_RAW_PRESETS: "{{ photoprism_raw_presets }}"
+    PHOTOPRISM_JPEG_QUALITY: "{{ photoprism_jpeg_quality }}"
+    PHOTOPRISM_DETECT_NSFW: "{{ photoprism_detect_nsfw }}"
+    PHOTOPRISM_UPLOAD_NSFW: "{{ photoprism_upload_nsfw }}"
+    PHOTOPRISM_DATABASE_DRIVER: "{{ photoprism_database_driver }}"
+    PHOTOPRISM_SITE_CAPTION: "{{ photoprism_site_caption }}"
+    PHOTOPRISM_SITE_DESCRIPTION: "{{ photoprism_site_description }}"
+    PHOTOPRISM_SITE_AUTHOR: "{{ photoprism_site_author }}"
+    PHOTOPRISM_SPONSOR: "{{ photoprism_sponsor }}"
+    PHOTOPRISM_HTTP_PORT: {{ service_port_http }}
+    PHOTOPRISM_DATABASE_NAME: "{{ mariadb_database }}"
+    PHOTOPRISM_DATABASE_USER: "{{ mariadb_user }}"
+    PHOTOPRISM_UID: {{ photoprism_uid.stdout }}
+    PHOTOPRISM_GID: {{ photoprism_gid.stdout }}

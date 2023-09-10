@@ -22,3 +22,7 @@ updates:
     directory: "/services/audiobookshelf/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/photoprism/chart"
+    schedule:
+      interval: "daily"

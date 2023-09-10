@@ -1,0 +1,68 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-app
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-app
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - image: {{ .Values.photoprism.image.repository }}:{{ .Values.photoprism.image.tag }}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Values.name }}-app
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-app
+        - secretRef:
+            name: {{ .Values.name }}-app
+        env:
+        - name: PHOTOPRISM_DATABASE_SERVER
+          value: {{ .Values.name }}-mariadb:3306
+        ports:
+        - name: http
+          containerPort: {{ .Values.network.service_port_http }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: data
+          mountPath: /photoprism/storage
+          subPath: app/storage
+        - name: photos
+          mountPath: /photoprism/originals
+          subPath: originals
+        {{- with .Values.resources.photoprism }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}-data
+      - name: photos
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}-photos

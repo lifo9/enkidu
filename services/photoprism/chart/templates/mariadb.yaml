@@ -1,0 +1,56 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-mariadb
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-mariadb
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-mariadb
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - image: {{ .Values.mariadb.image.repository }}:{{ .Values.mariadb.image.tag }}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Values.name }}-mariadb
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-mariadb
+        - secretRef:
+            name: {{ .Values.name }}-mariadb
+        args: [
+          "--innodb-buffer-pool-size=512M", "--transaction-isolation=READ-COMMITTED", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci", "--max-connections=512",
+          "--innodb-rollback-on-timeout=OFF","--innodb-lock-wait-timeout=120"
+        ]
+        ports:
+        - name: mysql
+          containerPort: 3306
+        livenessProbe:
+          exec:
+            command: ["sh", "-c", "mariadb-admin status -uroot -p$MARIADB_ROOT_PASSWORD"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: db
+        {{- with .Values.resources.mariadb }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}-data
