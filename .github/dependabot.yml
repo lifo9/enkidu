@@ -26,3 +26,7 @@ updates:
     directory: "/services/photoprism/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/invidious/chart"
+    schedule:
+      interval: "daily"

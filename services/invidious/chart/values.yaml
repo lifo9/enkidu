@@ -1,0 +1,62 @@
+name: invidious
+namespace: invidious
+app:
+  image:
+    repository: quay.io/invidious/invidious
+    tag: ac0c0609bb8b652e630c3603cd9dbb1c87fbdf44
+postgres:
+  image:
+    repository: postgres
+    tag: 15.4-alpine3.18
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: {{ invidious_uid.stdout }}
+  fsGroup: {{ invidious_gid.stdout }}
+
+resources:
+  app:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  postgres:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+network:
+  service_port_http: 3000
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  db_path: "{{ kube_app_data }}/invidious"
+
+secrets:
+  postgres:
+    POSTGRES_PASSWORD: "{{ postgres_password }}"
+
+env:
+  domain: "{{ domain }}"
+  postgres:
+    POSTGRES_DB: "{{ postgres_db }}"
+    POSTGRES_USER: "{{ postgres_user }}"
+  app:
+    INVIDIOUS_CONFIG: |
+      db:
+        dbname: "invidious"
+        user: "{{ postgres_user }}"
+        password: "{{ postgres_password }}"
+        host: invidious-postgres
+        port: 5432
+      external_port: 443
+      domain: {{ domain }}
+      https_only: true
+      check_tables: true
+      playlist_length_limit: 99999
+      hmac_key: "{{ invidious_hmac_key }}"

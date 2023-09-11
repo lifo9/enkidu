@@ -1,0 +1,7 @@
+kube_app_data: /kube/app_data
+domain: "{{ lookup('env', 'DOMAIN') }}"
+uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
+postgres_db: "{{ lookup('env', 'POSTGRES_DB') }}"
+postgres_user: "{{ lookup('env', 'POSTGRES_USER') }}"
+postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+invidious_hmac_key: "{{ lookup('env', 'INVIDIOUS_HMAC_KEY') }}"

@@ -1,0 +1,78 @@
+- name: Invidious
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create invidious user
+      become: true
+      ansible.builtin.user:
+        name: invidious
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u invidious
+      register: invidious_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g invidious
+      register: invidious_gid
+      changed_when: false
+
+    - name: Create invidious k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: invidious
+        namespace: invidious
+        state: present
+
+    - name: Create invidious app data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/invidious"
+        state: directory
+        owner: invidious
+        group: invidious
+        mode: "0700"
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: invidious
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install invidious helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "invidious"
+        namespace: "invidious"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"
+
+    - name: Create uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "invidious uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Invidious" "{{ uptime_endpoint }}"'

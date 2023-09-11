@@ -1,0 +1,15 @@
+#!/bin/sh
+source ../../helpers/bitwarden.sh
+
+export ANSIBLE_HOST="$(get_custom_field 'enkidu' 'SERVER_IP')"
+export ANSIBLE_PORT="$(get_custom_field 'enkidu' 'SERVER_PORT')"
+export ANSIBLE_USER="$(get_username 'enkidu')"
+export ANSIBLE_SUDO_PASS="$(get_password 'enkidu')"
+
+export DOMAIN="$(get_custom_field 'k8s - invidious' 'DOMAIN')"
+export UPTIME_ENDPOINT=$(get_custom_field 'k8s - invidious' 'UPTIME_ENDPOINT')
+
+export POSTGRES_DB="$(get_custom_field 'k8s - invidious' 'POSTGRES_DB')"
+export POSTGRES_USER="$(get_custom_field 'k8s - invidious' 'POSTGRES_USER')"
+export POSTGRES_PASSWORD="$(get_custom_field 'k8s - invidious' 'POSTGRES_PASSWORD')"
+export INVIDIOUS_HMAC_KEY="$(get_custom_field 'k8s - invidious' 'INVIDIOUS_HMAC_KEY')"
