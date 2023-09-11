@@ -13,3 +13,4 @@ export POSTGRES_DB="$(get_custom_field 'k8s - invidious' 'POSTGRES_DB')"
 export POSTGRES_USER="$(get_custom_field 'k8s - invidious' 'POSTGRES_USER')"
 export POSTGRES_PASSWORD="$(get_custom_field 'k8s - invidious' 'POSTGRES_PASSWORD')"
 export INVIDIOUS_HMAC_KEY="$(get_custom_field 'k8s - invidious' 'INVIDIOUS_HMAC_KEY')"
+export IP_WHITELIST=$(get_custom_field 'k8s - invidious' 'IP_WHITELIST')

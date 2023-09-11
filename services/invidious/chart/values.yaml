@@ -32,6 +32,7 @@ resources:
 
 network:
   service_port_http: 3000
+  ip_whitelist: "{{ ip_whitelist }}"
 
 storage:
   node_name: "{{ ansible_hostname }}"
