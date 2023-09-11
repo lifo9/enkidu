@@ -1,0 +1,70 @@
+name: nextcloud
+namespace: nextcloud
+app:
+  image:
+    repository: docker.io/nextcloud
+    tag: 27.0.2-apache
+redis:
+  image:
+    repository: docker.io/redis
+    tag: 7.2.1-alpine3.18
+mariadb:
+  image:
+    repository: docker.io/mariadb
+    tag: 11.1.2
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: {{ nextcloud_uid.stdout }}
+  fsGroup: {{ nextcloud_gid.stdout }}
+
+resources:
+  app:
+    limits:
+      cpu: 2
+      memory: 4Gi
+    requests:
+      cpu: 1
+      memory: 2Gi
+  redis:
+    limits:
+      cpu: 300m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  mariadb:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+network:
+  service_port_http: {{ service_port_http }}
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  app_path: "{{ kube_app_data }}/nextcloud"
+  data_path: "{{ data_path }}"
+
+secrets:
+  mariadb:
+    MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+    MYSQL_PASSWORD: "{{ mysql_password }}"
+  app:
+    MYSQL_PASSWORD: "{{ mysql_password }}"
+
+env:
+  domain: "{{ domain }}"
+  mariadb:
+    MYSQL_DATABASE: "{{ mysql_database }}"
+    MYSQL_USER: "{{ mysql_user }}"
+  app:
+    DOMAIN: "{{ domain }}"
+    MYSQL_HOST: "nextcloud-mariadb"
+    REDIS_HOST: "nextcloud-redis"
+    MYSQL_DATABASE: "{{ mysql_database }}"
+    MYSQL_USER: "{{ mysql_user }}"

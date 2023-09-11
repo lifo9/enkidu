@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-mariadb
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-mariadb
+data:
+  {{- range $key, $val := .Values.env.mariadb }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-app
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-app
+data:
+  {{- range $key, $val := .Values.env.app }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}

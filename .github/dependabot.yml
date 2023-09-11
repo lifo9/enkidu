@@ -30,3 +30,7 @@ updates:
     directory: "/services/invidious/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/nextcloud/chart"
+    schedule:
+      interval: "daily"

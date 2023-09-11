@@ -1,0 +1,132 @@
+- name: Nextcloud
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create nextcloud user
+      become: true
+      ansible.builtin.user:
+        name: nextcloud
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u nextcloud
+      register: nextcloud_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g nextcloud
+      register: nextcloud_gid
+      changed_when: false
+
+    - name: Create nextcloud k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: nextcloud
+        namespace: nextcloud
+        state: present
+
+    - name: Create nextcloud data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/nextcloud"
+        state: directory
+        owner: nextcloud
+        group: nextcloud
+        mode: "0700"
+
+    - name: Create nextcloud db data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/nextcloud/db"
+        state: directory
+        owner: nextcloud
+        group: nextcloud
+        mode: "0700"
+
+    - name: Create nextcloud redis data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/nextcloud/redis"
+        state: directory
+        owner: nextcloud
+        group: nextcloud
+        mode: "0700"
+
+    - name: Create nextcloud app data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/nextcloud/app"
+        state: directory
+        owner: nextcloud
+        group: nextcloud
+        mode: "0700"
+
+    - name: Configure redis-session.ini
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/nextcloud/redis-session.ini"
+        state: touch
+        owner: nextcloud
+        group: nextcloud
+        mode: "0644"
+
+    - name: Configure ports.conf
+      become: true
+      ansible.builtin.template:
+        src: "templates/ports.conf.j2"
+        dest: "{{ kube_app_data }}/nextcloud/ports.conf"
+        owner: nextcloud
+        group: nextcloud
+        mode: "0644"
+
+    - name: Configure cron.sh
+      become: true
+      ansible.builtin.template:
+        src: "templates/cron.sh"
+        dest: "{{ kube_app_data }}/nextcloud/cron.sh"
+        owner: nextcloud
+        group: nextcloud
+        mode: "0770"
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: nextcloud
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install nextcloud helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "nextcloud"
+        namespace: "nextcloud"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"
+
+    - name: Create uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "nextcloud uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Login – Cloud" "{{ uptime_endpoint }}"'

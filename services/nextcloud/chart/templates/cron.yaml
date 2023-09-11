@@ -1,0 +1,59 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-cron
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-cron
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-cron
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-cron
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Values.name }}-cron
+        command: ["/cron.sh"]
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-app
+        - secretRef:
+            name: {{ .Values.name }}-app
+        env:
+          - name: APACHE_UID
+            value: "{{ .Values.securityContext.runAsUser }}"
+        volumeMounts:
+        - name: app
+          mountPath: /var/www/html
+          subPath: app
+        - name: app
+          mountPath: /usr/local/etc/php/conf.d/redis-session.ini
+          subPath: redis-session.ini
+        - name: app
+          mountPath: /cron.sh
+          subPath: cron.sh
+        - name: data
+          mountPath: /var/www/html/data
+        {{- with .Values.resources.app }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: app
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}-app
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}-data

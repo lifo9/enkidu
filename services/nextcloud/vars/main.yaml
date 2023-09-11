@@ -1,0 +1,10 @@
+kube_app_data: /kube/app_data
+domain: "{{ lookup('env', 'DOMAIN') }}"
+uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
+mysql_root_password: "{{ lookup('env', 'MYSQL_ROOT_PASSWORD') }}"
+mysql_password: "{{ lookup('env', 'MYSQL_PASSWORD') }}"
+mysql_database: "{{ lookup('env', 'MYSQL_DATABASE') }}"
+mysql_user: "{{ lookup('env', 'MYSQL_USER') }}"
+data_path: "{{ lookup('env', 'DATA_PATH') }}"
+ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+service_port_http: 8080

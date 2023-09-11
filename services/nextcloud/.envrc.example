@@ -1,0 +1,17 @@
+#!/bin/sh
+source ../../helpers/bitwarden.sh
+
+export ANSIBLE_HOST="$(get_custom_field 'enkidu' 'SERVER_IP')"
+export ANSIBLE_PORT="$(get_custom_field 'enkidu' 'SERVER_PORT')"
+export ANSIBLE_USER="$(get_username 'enkidu')"
+export ANSIBLE_SUDO_PASS="$(get_password 'enkidu')"
+
+export DOMAIN="$(get_custom_field 'k8s - nextcloud' 'DOMAIN')"
+export UPTIME_ENDPOINT=$(get_custom_field 'k8s - nextcloud' 'UPTIME_ENDPOINT')
+
+export MYSQL_ROOT_PASSWORD="$(get_custom_field 'k8s - nextcloud' 'MYSQL_ROOT_PASSWORD')"
+export MYSQL_PASSWORD="$(get_custom_field 'k8s - nextcloud' 'MYSQL_PASSWORD')"
+export MYSQL_DATABASE="$(get_custom_field 'k8s - nextcloud' 'MYSQL_DATABASE')"
+export MYSQL_USER="$(get_custom_field 'k8s - nextcloud' 'MYSQL_USER')"
+export DATA_PATH="$(get_custom_field 'k8s - nextcloud' 'DATA_PATH')"
+export IP_WHITELIST=$(get_custom_field 'k8s - nextcloud' 'IP_WHITELIST')
