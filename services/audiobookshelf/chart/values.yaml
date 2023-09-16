@@ -7,6 +7,7 @@ image:
 securityContext:
   runAsNonRoot: true
   runAsUser: {{ audiobookshelf_uid.stdout }}
+  runAsGroup: {{ audiobookshelf_gid.stdout }}
   fsGroup: {{ audiobookshelf_gid.stdout }}
 
 resources:

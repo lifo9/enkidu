@@ -7,6 +7,7 @@ image:
 securityContext:
   runAsNonRoot: true
   runAsUser: {{ navidrome_uid.stdout }}
+  runAsGroup: {{ navidrome_gid.stdout }}
   fsGroup: {{ navidrome_gid.stdout }}
 
 resources:

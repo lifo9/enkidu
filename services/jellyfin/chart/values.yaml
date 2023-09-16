@@ -7,6 +7,7 @@ image:
 securityContext:
   runAsNonRoot: true
   runAsUser: {{ jellyfin_uid.stdout }}
+  runAsGroup: {{ jellyfin_gid.stdout }}
   fsGroup: {{ jellyfin_gid.stdout }}
 
 resources:

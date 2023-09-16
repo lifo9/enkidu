@@ -12,6 +12,7 @@ postgres:
 securityContext:
   runAsNonRoot: true
   runAsUser: {{ invidious_uid.stdout }}
+  runAsGroup: {{ invidious_gid.stdout }}
   fsGroup: {{ invidious_gid.stdout }}
 
 resources:

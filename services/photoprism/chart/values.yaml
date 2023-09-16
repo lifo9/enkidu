@@ -12,6 +12,7 @@ mariadb:
 securityContext:
   runAsNonRoot: true
   runAsUser: {{ photoprism_uid.stdout }}
+  runAsGroup: {{ photoprism_gid.stdout }}
   fsGroup: {{ photoprism_gid.stdout }}
 
 resources:
