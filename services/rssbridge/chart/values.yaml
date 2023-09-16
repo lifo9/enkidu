@@ -1,0 +1,30 @@
+name: rssbridge
+namespace: rssbridge
+image:
+  repository: docker.io/rssbridge/rss-bridge
+  tag: "2023-07-13"
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: {{ rssbridge_uid.stdout }}
+  runAsGroup: {{ rssbridge_gid.stdout }}
+  fsGroup: {{ rssbridge_gid.stdout }}
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 512Mi
+  requests:
+    cpu: 50m
+    memory: 256Mi
+
+network:
+  service_port_http: 8080
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/rssbridge"
+
+env:
+  domain: "{{ domain }}"
