@@ -1,0 +1,55 @@
+name: miniflux
+namespace: miniflux
+app:
+  image:
+    repository: docker.io/miniflux/miniflux
+    tag: 2.0.48
+postgres:
+  image:
+    repository: postgres
+    tag: 16.0-alpine3.18
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: {{ miniflux_uid.stdout }}
+  runAsGroup: {{ miniflux_gid.stdout }}
+  fsGroup: {{ miniflux_gid.stdout }}
+
+resources:
+  app:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  postgres:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+network:
+  service_port_http: 8080
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/miniflux"
+
+secrets:
+  app:
+    DATABASE_URL: "postgres://miniflux:{{ postgres_password }}@miniflux-postgres/miniflux?sslmode=disable"
+  postgres:
+    POSTGRES_PASSWORD: "{{ postgres_password }}"
+
+env:
+  domain: "{{ domain }}"
+  postgres:
+    POSTGRES_DB: "{{ postgres_db }}"
+    POSTGRES_USER: "{{ postgres_user }}"
+  app:
+    LISTEN_ADDR: "0.0.0.0:8080"
+    BASE_URL: "https://{{ domain }}"

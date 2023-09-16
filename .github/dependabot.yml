@@ -38,3 +38,7 @@ updates:
     directory: "/services/rssbridge/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/miniflux/chart"
+    schedule:
+      interval: "daily"

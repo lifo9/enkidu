@@ -1,0 +1,78 @@
+- name: Miniflux
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create miniflux user
+      become: true
+      ansible.builtin.user:
+        name: miniflux
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u miniflux
+      register: miniflux_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g miniflux
+      register: miniflux_gid
+      changed_when: false
+
+    - name: Create miniflux k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: miniflux
+        namespace: miniflux
+        state: present
+
+    - name: Create miniflux directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/miniflux"
+        state: directory
+        owner: miniflux
+        group: miniflux
+        mode: "0700"
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: miniflux
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install miniflux helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "miniflux"
+        namespace: "miniflux"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"
+
+    - name: Create uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "miniflux uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Miniflux" "{{ uptime_endpoint }}"'
