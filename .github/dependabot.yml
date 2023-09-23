@@ -42,3 +42,7 @@ updates:
     directory: "/services/miniflux/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/calibre/chart"
+    schedule:
+      interval: "daily"

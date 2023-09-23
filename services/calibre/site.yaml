@@ -1,0 +1,104 @@
+- name: Calibre
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create calibre user
+      become: true
+      ansible.builtin.user:
+        name: calibre
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u calibre
+      register: calibre_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g calibre
+      register: calibre_gid
+      changed_when: false
+
+    - name: Create calibre k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: calibre
+        namespace: calibre
+        state: present
+
+    - name: Create calibre app data directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/calibre"
+        state: directory
+        owner: calibre
+        group: calibre
+        mode: "0700"
+
+    - name: Create calibre app data override directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/calibre/override"
+        state: directory
+        owner: calibre
+        group: calibre
+        mode: "0700"
+
+    - name: Configure init-kasmvnc-config
+      become: true
+      ansible.builtin.template:
+        src: "templates/init-kasmvnc-config"
+        dest: "{{ kube_app_data }}/calibre/override/init-kasmvnc-config"
+        owner: calibre
+        group: calibre
+        mode: "0755"
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: calibre
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install calibre helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "calibre"
+        namespace: "calibre"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"
+
+    - name: Create calibre uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "calibre uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ calibre_domain }}/" "Calibre" "{{ calibre_uptime_endpoint }}" "{{ calibre_auth_plain }}"'
+
+    - name: Create calibre web uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "calibre web uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ calibre_web_domain }}/" "calibre" "{{ calibre_web_uptime_endpoint }}" "{{ calibre_web_auth_plain }}"'

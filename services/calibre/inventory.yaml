@@ -1,0 +1,7 @@
+all:
+  hosts:
+    server:
+      ansible_host: "{{ lookup('env', 'ANSIBLE_HOST') }}"
+      ansible_port: "{{ lookup('env', 'ANSIBLE_PORT') }}"
+      ansible_user: "{{ lookup('env', 'ANSIBLE_USER') }}"
+      ansible_password: "{{ lookup('env', 'ANSIBLE_SUDO_PASS') }}"

@@ -1,0 +1,40 @@
+name: calibre
+namespace: calibre
+image:
+  repository: lscr.io/linuxserver/calibre
+  tag: 6.27.0
+
+securityContext:
+  # LinuxServer.io containers cannot be run as non-root,
+  # but it supports PUID/GUID and will switch to a non-root user once
+  # the initialization finishes...
+  fsGroup: {{ calibre_gid.stdout }}
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 1Gi
+  requests:
+    cpu: 150m
+    memory: 512Mi
+
+network:
+  calibre_port_http: 8080
+  calibre_web_port_http: 8082
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/calibre"
+  books_path: "{{ calibre_books_path }}"
+
+secrets:
+  calibre_auth: "{{ calibre_auth }}"
+  calibre_web_auth: "{{ calibre_web_auth }}"
+
+env:
+  calibre_domain: "{{ calibre_domain }}"
+  calibre_web_domain: "{{ calibre_web_domain }}"
+  PUID: {{ calibre_uid.stdout }}
+  PGID: {{ calibre_gid.stdout }}
+  DISABLE_IPV6: "true"

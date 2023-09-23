@@ -1,0 +1,74 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.env.calibre_domain }}`) && PathPrefix(`/`)
+    middlewares:
+      - name: {{ .Values.name }}-ipwhitelist
+        namespace: {{ .Values.namespace }}
+      - name: {{ .Values.name }}-auth
+        namespace: {{ .Values.namespace }}
+    services:
+    - name: {{ .Values.name }}
+      port: {{ .Values.network.calibre_port_http }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.name }}-web
+  namespace: {{ .Values.namespace }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.env.calibre_web_domain }}`) && PathPrefix(`/`)
+    middlewares:
+      - name: {{ .Values.name }}-ipwhitelist
+        namespace: {{ .Values.namespace }}
+      - name: {{ .Values.name }}-web-auth
+        namespace: {{ .Values.namespace }}
+    services:
+    - name: {{ .Values.name }}-web
+      port: {{ .Values.network.calibre_web_port_http }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.name }}-ipwhitelist
+  namespace: {{ .Values.namespace }}
+spec:
+  ipWhiteList:
+    sourceRange:
+    {{- range $ip := splitList "," .Values.network.ip_whitelist }}
+      - "{{ $ip }}"
+    {{- end }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.name }}-auth
+  namespace: {{ .Values.namespace }}
+spec:
+  basicAuth:
+    secret: {{ .Values.name }}-auth
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.name }}-web-auth
+  namespace: {{ .Values.namespace }}
+spec:
+  basicAuth:
+    secret: {{ .Values.name }}-web-auth

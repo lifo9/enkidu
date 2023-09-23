@@ -1,0 +1,18 @@
+#!/bin/sh
+source ../../helpers/bitwarden.sh
+
+export ANSIBLE_HOST="$(get_custom_field 'enkidu' 'SERVER_IP')"
+export ANSIBLE_PORT="$(get_custom_field 'enkidu' 'SERVER_PORT')"
+export ANSIBLE_USER="$(get_username 'enkidu')"
+export ANSIBLE_SUDO_PASS="$(get_password 'enkidu')"
+
+export CALIBRE_DOMAIN="$(get_custom_field 'k8s - calibre' 'CALIBRE_DOMAIN')"
+export CALIBRE_WEB_DOMAIN="$(get_custom_field 'k8s - calibre' 'CALIBRE_WEB_DOMAIN')"
+export CALIBRE_UPTIME_ENDPOINT=$(get_custom_field 'k8s - calibre' 'CALIBRE_UPTIME_ENDPOINT')
+export CALIBRE_WEB_UPTIME_ENDPOINT=$(get_custom_field 'k8s - calibre' 'CALIBRE_WEB_UPTIME_ENDPOINT')
+export IP_WHITELIST=$(get_custom_field 'k8s - calibre' 'IP_WHITELIST')
+export CALIBRE_AUTH=$(get_custom_field 'k8s - calibre' 'CALIBRE_AUTH')
+export CALIBRE_AUTH_PLAIN=$(get_custom_field 'k8s - calibre' 'CALIBRE_AUTH_PLAIN')
+export CALIBRE_WEB_AUTH=$(get_custom_field 'k8s - calibre' 'CALIBRE_WEB_AUTH')
+export CALIBRE_WEB_AUTH_PLAIN=$(get_custom_field 'k8s - calibre' 'CALIBRE_WEB_AUTH_PLAIN')
+export CALIBRE_BOOKS_PATH=$(get_custom_field 'k8s - calibre' 'CALIBRE_BOOKS_PATH')

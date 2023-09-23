@@ -1,0 +1,6 @@
+apiVersion: v2
+name: calibre
+description: A Helm chart to install Calibre
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

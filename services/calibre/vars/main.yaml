@@ -1,0 +1,11 @@
+kube_app_data: /kube/app_data
+calibre_domain: "{{ lookup('env', 'CALIBRE_DOMAIN') }}"
+calibre_web_domain: "{{ lookup('env', 'CALIBRE_WEB_DOMAIN') }}"
+calibre_uptime_endpoint: "{{ lookup('env', 'CALIBRE_UPTIME_ENDPOINT') }}"
+calibre_web_uptime_endpoint: "{{ lookup('env', 'CALIBRE_WEB_UPTIME_ENDPOINT') }}"
+ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+calibre_auth: "{{ lookup('env', 'CALIBRE_AUTH') }}"
+calibre_auth_plain: "{{ lookup('env', 'CALIBRE_AUTH_PLAIN') }}"
+calibre_web_auth: "{{ lookup('env', 'CALIBRE_WEB_AUTH') }}"
+calibre_web_auth_plain: "{{ lookup('env', 'CALIBRE_WEB_AUTH_PLAIN') }}"
+calibre_books_path: "{{ lookup('env', 'CALIBRE_BOOKS_PATH') }}"
