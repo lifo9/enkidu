@@ -6,6 +6,7 @@ image:
 
 securityContext:
   runAsNonRoot: true
+  allowPrivilegeEscalation: false
   runAsUser: {{ navidrome_uid.stdout }}
   runAsGroup: {{ navidrome_gid.stdout }}
   fsGroup: {{ navidrome_gid.stdout }}

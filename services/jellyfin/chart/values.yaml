@@ -6,6 +6,7 @@ image:
 
 securityContext:
   runAsNonRoot: true
+  allowPrivilegeEscalation: false
   runAsUser: {{ jellyfin_uid.stdout }}
   runAsGroup: {{ jellyfin_gid.stdout }}
   fsGroup: {{ jellyfin_gid.stdout }}

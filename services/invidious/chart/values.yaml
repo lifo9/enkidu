@@ -11,6 +11,7 @@ postgres:
 
 securityContext:
   runAsNonRoot: true
+  allowPrivilegeEscalation: false
   runAsUser: {{ invidious_uid.stdout }}
   runAsGroup: {{ invidious_gid.stdout }}
   fsGroup: {{ invidious_gid.stdout }}

@@ -11,6 +11,7 @@ postgres:
 
 securityContext:
   runAsNonRoot: true
+  allowPrivilegeEscalation: false
   runAsUser: {{ miniflux_uid.stdout }}
   runAsGroup: {{ miniflux_gid.stdout }}
   fsGroup: {{ miniflux_gid.stdout }}

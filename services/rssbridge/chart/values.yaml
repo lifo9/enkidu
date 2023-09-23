@@ -6,6 +6,7 @@ image:
 
 securityContext:
   runAsNonRoot: true
+  allowPrivilegeEscalation: false
   runAsUser: {{ rssbridge_uid.stdout }}
   runAsGroup: {{ rssbridge_gid.stdout }}
   fsGroup: {{ rssbridge_gid.stdout }}

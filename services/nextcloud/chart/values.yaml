@@ -15,6 +15,7 @@ mariadb:
 
 securityContext:
   runAsNonRoot: true
+  allowPrivilegeEscalation: false
   runAsUser: {{ nextcloud_uid.stdout }}
   runAsGroup: {{ nextcloud_gid.stdout }}
   fsGroup: {{ nextcloud_gid.stdout }}

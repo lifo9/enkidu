@@ -6,6 +6,7 @@ image:
 
 securityContext:
   runAsNonRoot: true
+  allowPrivilegeEscalation: false
   runAsUser: {{ audiobookshelf_uid.stdout }}
   runAsGroup: {{ audiobookshelf_gid.stdout }}
   fsGroup: {{ audiobookshelf_gid.stdout }}

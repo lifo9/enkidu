@@ -6,6 +6,7 @@ image:
 
 securityContext:
   runAsNonRoot: true
+  allowPrivilegeEscalation: false
   runAsUser: {{ vaultwarden_uid.stdout }}
   runAsGroup: {{ vaultwarden_gid.stdout }}
   fsGroup: {{ vaultwarden_gid.stdout }}
