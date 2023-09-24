@@ -1,0 +1,3 @@
+kube_app_data: /kube/app_data
+music_path: "{{ lookup('env', 'MUSIC_PATH') }}"
+downloads_path: "{{ lookup('env', 'DOWNLOADS_PATH') }}"

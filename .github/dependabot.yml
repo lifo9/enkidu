@@ -46,3 +46,7 @@ updates:
     directory: "/services/calibre/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/beets/chart"
+    schedule:
+      interval: "daily"

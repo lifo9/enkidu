@@ -1,0 +1,2 @@
+#!/bin/bash
+PYTHONPATH=/config/tidal-dl /config/tidal-dl/bin/tidal-dl $@

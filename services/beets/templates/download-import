@@ -1,0 +1,3 @@
+#!/bin/sh
+tidal-dl -l /config/music.txt
+beets-import-auto

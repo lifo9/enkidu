@@ -1,0 +1,3 @@
+#!/bin/bash
+beet -v import /downloads -A
+rm -rf /downloads/*

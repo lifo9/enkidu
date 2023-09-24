@@ -1,0 +1,28 @@
+name: beets
+namespace: beets
+image:
+  repository: ghcr.io/linuxserver/beets
+  tag: 1.6.0
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ beets_uid.stdout }}
+  runAsGroup: {{ beets_gid.stdout }}
+  fsGroup: {{ beets_gid.stdout }}
+
+resources:
+  limits:
+    cpu: 1
+    memory: 2Gi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/beets"
+  music_path: "{{ music_path }}"
+  downloads_path: "{{ downloads_path }}"
+
+env:
