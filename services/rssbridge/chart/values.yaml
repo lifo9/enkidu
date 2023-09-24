@@ -2,7 +2,7 @@ name: rssbridge
 namespace: rssbridge
 image:
   repository: docker.io/rssbridge/rss-bridge
-  tag: "2023-07-13"
+  tag: "2023-09-24"
 
 securityContext:
   runAsNonRoot: true
