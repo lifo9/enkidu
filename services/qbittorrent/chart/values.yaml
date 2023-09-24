@@ -1,0 +1,56 @@
+name: qbittorrent
+namespace: qbittorrent
+app:
+  image:
+    repository: ghcr.io/linuxserver/qbittorrent
+    tag: 4.5.5
+gluetun:
+  image:
+    repository: ghcr.io/qdm12/gluetun
+    tag: v3.35.0
+
+securityContext:
+  fsGroup: {{ qbittorrent_gid.stdout }}
+
+resources:
+  app:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  gluetun:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+network:
+  service_port_http: 8080
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/qbittorrent"
+  downloads_path: "{{ downloads_path }}"
+
+secrets:
+  app:
+  gluetun:
+    OPENVPN_USER: "{{ openvpn_user }}"
+
+env:
+  domain: "{{ domain }}"
+  app:
+    PUID: "{{ qbittorrent_uid.stdout }}"
+    GUID: "{{ qbittorrent_gid.stdout }}"
+  gluetun:
+    OPENVPN_IPV6: "off"
+    VPN_SERVICE_PROVIDER: "{{ vpn_service_provider }}"
+    VPN_TYPE: "{{ vpn_type }}"
+    OPENVPN_CIPHERS: "{{ openvpn_ciphers }}"
+    PUID: "{{ qbittorrent_uid.stdout }}"
+    GUID: "{{ qbittorrent_gid.stdout }}"

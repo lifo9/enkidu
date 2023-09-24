@@ -1,0 +1,75 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-app
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-app
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.name }}-gluetun
+        image: {{ .Values.gluetun.image.repository }}:{{ .Values.gluetun.image.tag }}
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN"]
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-gluetun
+        - secretRef:
+            name: {{ .Values.name }}-gluetun
+        {{- with .Values.resources.gluetun }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      - name: {{ .Values.name }}-app
+        image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-app
+        - secretRef:
+            name: {{ .Values.name }}-app
+        {{- with .Values.resources.app }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+        ports:
+        - containerPort: {{ .Values.network.service_port_http }}
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.network.service_port_http }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.network.service_port_http }}
+        volumeMounts:
+        - mountPath: /config
+          name: data
+        - mountPath: /downloads
+          name: downloads
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}-data
+      - name: downloads
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}-downloads

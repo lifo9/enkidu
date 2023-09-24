@@ -50,3 +50,7 @@ updates:
     directory: "/services/beets/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/qbittorrent/chart"
+    schedule:
+      interval: "daily"

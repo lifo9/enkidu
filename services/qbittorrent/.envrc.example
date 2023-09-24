@@ -1,0 +1,17 @@
+#!/bin/sh
+source ../../helpers/bitwarden.sh
+
+export ANSIBLE_HOST="$(get_custom_field 'enkidu' 'SERVER_IP')"
+export ANSIBLE_PORT="$(get_custom_field 'enkidu' 'SERVER_PORT')"
+export ANSIBLE_USER="$(get_username 'enkidu')"
+export ANSIBLE_SUDO_PASS="$(get_password 'enkidu')"
+
+export DOMAIN="$(get_custom_field 'k8s - qbittorrent' 'DOMAIN')"
+export UPTIME_ENDPOINT=$(get_custom_field 'k8s - qbittorrent' 'UPTIME_ENDPOINT')
+export IP_WHITELIST=$(get_custom_field 'k8s - qbittorrent' 'IP_WHITELIST')
+
+export DOWNLOADS_PATH=$(get_custom_field 'k8s - qbittorrent' 'DOWNLOADS_PATH')
+export OPENVPN_USER=$(get_custom_field 'k8s - qbittorrent' 'OPENVPN_USER')
+export OPENVPN_CIPHERS=$(get_custom_field 'k8s - qbittorrent' 'OPENVPN_CIPHERS')
+export VPN_SERVICE_PROVIDER=$(get_custom_field 'k8s - qbittorrent' 'VPN_SERVICE_PROVIDER')
+export VPN_TYPE=$(get_custom_field 'k8s - qbittorrent' 'VPN_TYPE')

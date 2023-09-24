@@ -1,0 +1,87 @@
+- name: Qbittorrent
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create qbittorrent user
+      become: true
+      ansible.builtin.user:
+        name: qbittorrent
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u qbittorrent
+      register: qbittorrent_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g qbittorrent
+      register: qbittorrent_gid
+      changed_when: false
+
+    - name: Create qbittorrent k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: qbittorrent
+        namespace: qbittorrent
+        state: present
+
+    - name: Create qbittorrent app directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/qbittorrent"
+        state: directory
+        owner: qbittorrent
+        group: qbittorrent
+        mode: "0700"
+
+    - name: Create qbittorrent downloads directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ downloads_path }}"
+        state: directory
+        owner: qbittorrent
+        group: qbittorrent
+        mode: "0700"
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: qbittorrent
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install qbittorrent helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "qbittorrent"
+        namespace: "qbittorrent"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"
+
+    - name: Create uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "qbittorrent uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "qBittorrent Web UI" "{{ uptime_endpoint }}"'
