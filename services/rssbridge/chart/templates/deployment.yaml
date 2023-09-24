@@ -51,6 +51,9 @@ spec:
         - name: data
           mountPath: /nginx.conf
           subPath: nginx.conf
+        - name: data
+          mountPath: /etc/php/8.2/fpm/pool.d/www.conf
+          subPath: php-fpm.conf
         {{- with .Values.resources }}
         resources:
         {{- toYaml . | nindent 10 }}
