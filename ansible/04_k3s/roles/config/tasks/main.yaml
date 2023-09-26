@@ -54,3 +54,27 @@
   kubernetes.core.helm_plugin:
     plugin_path: https://github.com/databus23/helm-diff
     state: present
+
+- name: Install the system-upgrade-controller
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    src: https://github.com/rancher/system-upgrade-controller/releases/latest/download/system-upgrade-controller.yaml
+
+- name: Label node with k3s-upgrade
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Node
+      metadata:
+        name: "{{ ansible_hostname }}"
+        labels:
+          k3s-upgrade: 'true'
+
+- name: Configure upgrade plan
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    template: files/upgrade-plan.yaml
