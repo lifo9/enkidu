@@ -2,3 +2,4 @@ Csfd
 EconomistWorldInBriefBridge
 Pctuning
 PctuningPodcast
+DennikN

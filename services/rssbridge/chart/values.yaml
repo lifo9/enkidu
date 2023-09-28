@@ -27,5 +27,8 @@ storage:
   node_name: "{{ ansible_hostname }}"
   data_path: "{{ kube_app_data }}/rssbridge"
 
+secrets:
+  DENNIKN_AUTH_COOKIE: {{ dennikn_auth_cookie }}
+
 env:
   domain: "{{ domain }}"

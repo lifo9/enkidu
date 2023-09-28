@@ -10,3 +10,4 @@ export DOMAIN="$(get_custom_field 'rssbridge' 'DOMAIN')"
 export UPTIME_ENDPOINT=$(get_custom_field 'rssbridge' 'UPTIME_ENDPOINT')
 export IP_WHITELIST=$(get_custom_field 'rssbridge' 'IP_WHITELIST')
 export PASSWORD=$(get_custom_field 'rssbridge' 'PASSWORD')
+export DENNIKN_AUTH_COOKIE=$(get_custom_field 'rssbridge' 'DENNIKN_AUTH_COOKIE')
