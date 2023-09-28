@@ -10,3 +10,4 @@
     - k3s
     - config
     - cert-manager
+    - prometheus

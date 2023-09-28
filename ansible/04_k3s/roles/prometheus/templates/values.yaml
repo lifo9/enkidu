@@ -1,0 +1,4 @@
+grafana:
+  enabled: false
+alertmanager:
+  enabled: false
