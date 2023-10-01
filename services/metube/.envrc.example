@@ -1,0 +1,13 @@
+#!/bin/sh
+source ../../helpers/bitwarden.sh
+
+export ANSIBLE_HOST="$(get_custom_field 'enkidu' 'SERVER_IP')"
+export ANSIBLE_PORT="$(get_custom_field 'enkidu' 'SERVER_PORT')"
+export ANSIBLE_USER="$(get_username 'enkidu')"
+export ANSIBLE_SUDO_PASS="$(get_password 'enkidu')"
+
+export DOMAIN="$(get_custom_field 'k8s - metube' 'DOMAIN')"
+export UPTIME_ENDPOINT=$(get_custom_field 'k8s - metube' 'UPTIME_ENDPOINT')
+export IP_WHITELIST=$(get_custom_field 'k8s - metube' 'IP_WHITELIST')
+
+export DOWNLOADS_PATH=$(get_custom_field 'k8s - metube' 'DOWNLOADS_PATH')

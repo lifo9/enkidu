@@ -58,3 +58,7 @@ updates:
     directory: "/services/kiwix/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/metube/chart"
+    schedule:
+      interval: "daily"

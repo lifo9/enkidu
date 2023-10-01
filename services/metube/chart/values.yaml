@@ -1,0 +1,52 @@
+name: metube
+namespace: metube
+image:
+  repository: ghcr.io/alexta69/metube
+  tag: "2023-09-25"
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ metube_uid.stdout }}
+  runAsGroup: {{ metube_gid.stdout }}
+  fsGroup: {{ metube_gid.stdout }}
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+
+network:
+  service_port_http: 8081
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  downloads_path: "{{ downloads_path }}"
+
+env:
+  domain: "{{ domain }}"
+  DOWNLOAD_DIR: "/download"
+  TEMP_DIR: "/download"
+  STATE_DIR: "/download/.metube"
+  DARK_MODE: "true"
+  CUSTOM_DIRS: "false"
+
+  OUTPUT_TEMPLATE: "%(title)s.%(ext)s"
+  YTDL_OPTIONS: |
+    {
+      "ignore_errors": true,
+      "restrict_filenames": true,
+      "clean_infojson": true,
+      "write_thumbnail": true,
+      "audio_format": "m4a",
+      "postprocessors": [
+          {
+              "key": "FFmpegMetadata"
+          }
+      ]
+    }
