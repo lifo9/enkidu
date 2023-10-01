@@ -1,0 +1,31 @@
+name: kiwix
+namespace: kiwix
+image:
+  repository: ghcr.io/kiwix/kiwix-serve
+  tag: 3.5.0-2
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ kiwix_uid.stdout }}
+  runAsGroup: {{ kiwix_gid.stdout }}
+  fsGroup: {{ kiwix_gid.stdout }}
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 0.5
+    memory: 512Mi
+
+network:
+  service_port_http: 8080
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  kiwix_path: "{{ kiwix_path }}"
+
+env:
+  domain: "{{ domain }}"

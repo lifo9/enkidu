@@ -54,3 +54,7 @@ updates:
     directory: "/services/qbittorrent/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/kiwix/chart"
+    schedule:
+      interval: "daily"

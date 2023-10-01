@@ -1,0 +1,4 @@
+domain: "{{ lookup('env', 'DOMAIN') }}"
+uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
+ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+kiwix_path: "{{ lookup('env', 'KIWIX_PATH') }}"

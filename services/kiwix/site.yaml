@@ -1,0 +1,69 @@
+- name: Kiwix
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Create kiwix user
+      become: true
+      ansible.builtin.user:
+        name: kiwix
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u kiwix
+      register: kiwix_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g kiwix
+      register: kiwix_gid
+      changed_when: false
+
+    - name: Create kiwix k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: kiwix
+        namespace: kiwix
+        state: present
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: kiwix
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install kiwix helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "kiwix"
+        namespace: "kiwix"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"
+
+    - name: Create uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "kiwix uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Kiwix" "{{ uptime_endpoint }}"'
