@@ -1,0 +1,21 @@
+#!/bin/sh
+source ../../helpers/bitwarden.sh
+
+export ANSIBLE_HOST="$(get_custom_field 'enkidu' 'SERVER_IP')"
+export ANSIBLE_PORT="$(get_custom_field 'enkidu' 'SERVER_PORT')"
+export ANSIBLE_USER="$(get_username 'enkidu')"
+export ANSIBLE_SUDO_PASS="$(get_password 'enkidu')"
+
+export DOMAIN="$(get_custom_field 'k8s - gitea' 'DOMAIN')"
+export UPTIME_ENDPOINT=$(get_custom_field 'k8s - gitea' 'UPTIME_ENDPOINT')
+export IP_WHITELIST=$(get_custom_field 'k8s - gitea' 'IP_WHITELIST')
+
+export POSTGRES_DB="$(get_custom_field 'k8s - gitea' 'POSTGRES_DB')"
+export POSTGRES_USER="$(get_custom_field 'k8s - gitea' 'POSTGRES_USER')"
+export POSTGRES_PASSWORD="$(get_custom_field 'k8s - gitea' 'POSTGRES_PASSWORD')"
+
+export SMTP_HOST="$(get_custom_field 'k8s - gitea' 'SMTP_HOST')"
+export SMTP_PORT="$(get_custom_field 'k8s - gitea' 'SMTP_PORT')"
+export SMTP_FROM="$(get_custom_field 'k8s - gitea' 'SMTP_FROM')"
+export SMTP_USERNAME="$(get_custom_field 'k8s - gitea' 'SMTP_USERNAME')"
+export SMTP_PASSWORD="$(get_custom_field 'k8s - gitea' 'SMTP_PASSWORD')"

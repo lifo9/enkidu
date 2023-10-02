@@ -1,0 +1,12 @@
+kube_app_data: /kube/app_data
+domain: "{{ lookup('env', 'DOMAIN') }}"
+uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
+ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+postgres_db: "{{ lookup('env', 'POSTGRES_DB') }}"
+postgres_user: "{{ lookup('env', 'POSTGRES_USER') }}"
+postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+smtp_host: "{{ lookup('env', 'SMTP_HOST') }}"
+smtp_port: "{{ lookup('env', 'SMTP_PORT') }}"
+smtp_from: "{{ lookup('env', 'SMTP_FROM') }}"
+smtp_username: "{{ lookup('env', 'SMTP_USERNAME') }}"
+smtp_password: "{{ lookup('env', 'SMTP_PASSWORD') }}"

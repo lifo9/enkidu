@@ -1,0 +1,74 @@
+name: gitea
+namespace: gitea
+app:
+  image:
+    repository: docker.io/gitea/gitea
+    tag: 1.20.4-rootless
+postgres:
+  image:
+    repository: postgres
+    tag: 16.0-alpine3.18
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ gitea_uid.stdout }}
+  runAsGroup: {{ gitea_gid.stdout }}
+  fsGroup: {{ gitea_gid.stdout }}
+
+resources:
+  app:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  postgres:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+network:
+  service_port_http: 8080
+  service_port_ssh: 2222
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/gitea"
+
+secrets:
+  app:
+    GITEA__database__PASSWD: "{{ postgres_password }}"
+    GITEA__mailer__USER: "{{ smtp_username }}"
+    GITEA__mailer__PASSWD: "{{ smtp_password }}"
+    GITEA__mailer__SMTP_ADDR: "{{ smtp_host }}"
+    GITEA__mailer__SMTP_PORT: "{{ smtp_port }}"
+  postgres:
+    POSTGRES_PASSWORD: "{{ postgres_password }}"
+
+env:
+  domain: "{{ domain }}"
+  postgres:
+    POSTGRES_DB: "{{ postgres_db }}"
+    POSTGRES_USER: "{{ postgres_user }}"
+  app:
+    GITEA__database__DB_TYPE: "postgres"
+    GITEA__database__HOST: "gitea-postgres:5432"
+    GITEA__database__NAME: "{{ postgres_db }}"
+    GITEA__database__USER: "{{ postgres_user }}"
+    GITEA__mailer__ENABLED: "true"
+    GITEA__mailer__FROM: "{{ smtp_from }}"
+    GITEA__mailer__PROTOCOL: "smtps"
+    GITEA__server__SSH_LISTEN_PORT: 2222
+    DOMAIN: "{{ domain }}"
+    HTTP_PORT: 8080
+    ROOT_URL: "https://{{ domain }}/"
+    GITEA_URL: "https://{{ domain }}/"
+    SSH_DOMAIN: "{{ domain }}"
+    VIRTUAL_HOST: "{{ domain }}"
+    VIRTUAL_PORT: 8080

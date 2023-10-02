@@ -1,0 +1,6 @@
+apiVersion: v2
+name: Gitea
+description: A Helm chart to install gitea
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
