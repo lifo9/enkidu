@@ -62,3 +62,7 @@ updates:
     directory: "/services/metube/chart"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/services/gitea/chart"
+    schedule:
+      interval: "daily"
