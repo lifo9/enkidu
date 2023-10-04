@@ -2,7 +2,7 @@ name: metube
 namespace: metube
 image:
   repository: ghcr.io/alexta69/metube
-  tag: "2023-09-25"
+  tag: "2023-10-03"
 
 securityContext:
   runAsNonRoot: true
