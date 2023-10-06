@@ -1,0 +1,57 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-runner
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-runner
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-runner
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      restartPolicy: Always
+      containers:
+      - name: {{ .Values.name }}-runner
+        image: {{ .Values.runner.image.repository }}:{{ .Values.runner.image.tag }}
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-runner
+        - secretRef:
+            name: {{ .Values.name }}-runner
+        volumeMounts:
+        - name: data
+          mountPath: /data
+          subPath: gitea-runner
+        - name: files
+          mountPath: /etc/subuid
+          subPath: subuid
+        - name: files
+          mountPath: /etc/subgid
+          subPath: subgid
+        {{- with .Values.resources.runner }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}
+      - name: files
+        configMap:
+          name: {{ .Values.name }}-runner-files
+          items:
+          - key: subuid
+            path: subuid
+          - key: subgid
+            path: subgid

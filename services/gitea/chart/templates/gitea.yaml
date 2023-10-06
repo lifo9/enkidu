@@ -54,7 +54,7 @@ spec:
         - name: data
           mountPath: /etc/gitea
           subPath: gitea-etc
-        {{- with .Values.resources }}
+        {{- with .Values.resources.app }}
         resources:
         {{- toYaml . | nindent 10 }}
         {{- end }}

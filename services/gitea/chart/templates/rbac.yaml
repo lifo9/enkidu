@@ -16,7 +16,10 @@ rules:
     resources:
       - configmaps
     resourceNames:
-      - {{ .Values.name }}
+      - {{ .Values.name }}-app
+      - {{ .Values.name }}-postgres
+      - {{ .Values.name }}-runner
+      - {{ .Values.name }}-runner-files
     verbs:
       - get
   - apiGroups:
@@ -26,6 +29,7 @@ rules:
     resourceNames:
       - {{ .Values.name }}-app
       - {{ .Values.name }}-postgres
+      - {{ .Values.name }}-runner
     verbs:
       - get
 ---

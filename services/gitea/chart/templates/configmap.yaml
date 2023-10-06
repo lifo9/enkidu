@@ -22,3 +22,30 @@ data:
   {{- range $key, $val := .Values.env.postgres }}
   {{ $key }}: {{ $val | quote }}
   {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-runner
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-runner
+data:
+  {{- range $key, $val := .Values.env.runner }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-runner-files
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-runner-files
+data:
+  subuid: |
+    dockremap:1000000:1000000
+    rootless:10000000:1000000
+  subgid: |
+    dockremap:1000000:1000000
+    rootless:10000000:1000000
