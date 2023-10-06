@@ -13,4 +13,6 @@
     - `RENOVATE_ENDPOINT` (`https://{domain}/api/v1`)
     - `RENOVATE_GIT_AUTHOR` (e.g. `Renovate Bot <renovate-bot@gitea.com>`)
     - `GH_COM_TOKEN` (token for GitHub.com)
+    - `DOCKER_HUB_USERNAME` (username for Docker Hub)
+    - `DOCKER_HUB_PASSWORD` (token for Docker Hub)
 5. Add `renovatebot` as colaborator to the repository
