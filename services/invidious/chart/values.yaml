@@ -3,7 +3,7 @@ namespace: invidious
 app:
   image:
     repository: quay.io/invidious/invidious
-    tag: ac0c0609bb8b652e630c3603cd9dbb1c87fbdf44
+    tag: bb14f794969f62582917a39c2dd57bf92fa146a7
 postgres:
   image:
     repository: postgres
