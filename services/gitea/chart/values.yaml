@@ -3,7 +3,7 @@ namespace: gitea
 app:
   image:
     repository: docker.io/gitea/gitea
-    tag: 1.20.5-rootless
+    tag: 1.21.0-rc1-rootless
 runner:
   image:
     repository: docker.io/gitea/act_runner
