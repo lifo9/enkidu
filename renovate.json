@@ -9,7 +9,7 @@
     "dockerfile",
     "github-actions",
     "helm-values",
-    "dockerfile"
+    "pip_requirements"
   ],
   "packageRules": [
     {
