@@ -1,5 +1,5 @@
 # Server@home
-🤖 Automated home server setup using [Debian](https://www.debian.org/), [Ansible](https://www.ansible.com/) and [K3S](https://k3s.io/) as core building blocks.
+🤖 Automated home server setup using [Debian](https://www.debian.org/), [Ansible](https://www.ansible.com/), [K3S](https://k3s.io/) and [Gitea](https://about.gitea.com/) as core building blocks.
 
 Follow the docs to get started:
 1. [System installation](docs/01_system_install.md)
