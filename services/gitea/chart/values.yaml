@@ -79,6 +79,7 @@ env:
     GITEA__mailer__PROTOCOL: "smtps"
     GITEA__server__SSH_LISTEN_PORT: 2222
     GITEA__actions__ENABLED: "true"
+    GITEA__packages__ENABLED: "true"
     DOMAIN: "{{ domain }}"
     HTTP_PORT: 8080
     ROOT_URL: "https://{{ domain }}/"
@@ -87,8 +88,6 @@ env:
     VIRTUAL_HOST: "{{ domain }}"
     VIRTUAL_PORT: 8080
   runner:
-    DOCKER_HOST: tcp://localhost:2376
-    DOCKER_CERT_PATH: /certs/client
-    DOCKER_TLS_VERIFY: "1"
+    DOCKER_HOST: unix:///run/user/1000/docker.sock
     GITEA_INSTANCE_URL: "http://gitea-app.gitea.svc.cluster.local:8080"
     DOCKER_DRIVER: "fuse-overlayfs"

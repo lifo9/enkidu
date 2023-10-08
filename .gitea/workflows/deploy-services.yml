@@ -1,0 +1,28 @@
+name: Deploy services
+
+on:
+  push:
+    paths:
+      - "services/**"
+    branches:
+      - "master"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    container: "${{ secrets.LOCAL_REGISTRY }}/${{ gitea.repository_owner }}/deploy-docker:latest"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Deploy
+        env:
+          BW_CLIENTID: "${{ secrets.BW_CLIENTID }}"
+          BW_CLIENTSECRET: "${{ secrets.BW_CLIENTSECRET }}"
+          BW_SERVER: "${{ secrets.BW_SERVER }}"
+          BW_PASSWORD: "${{ secrets.BW_PASSWORD }}"
+          SSH_PRIVATE_KEY_BASE_64: "${{ secrets.SSH_PRIVATE_KEY_BASE_64 }}"
+          LOCAL_REGISTRY: "${{ secrets.LOCAL_REGISTRY }}"
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+        run: |
+          ./helpers/deploy.sh

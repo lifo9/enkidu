@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-export BW_SESSION=$(bw unlock --raw)
+export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
 [ -z "$BW_SESSION" ] && exit 1
 BW_COMMAND="bw --session $BW_SESSION"
 $BW_COMMAND sync

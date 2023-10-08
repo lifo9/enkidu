@@ -6,8 +6,10 @@
   "dependencyDashboard": false,
   "prHourlyLimit": 0,
   "enabledManagers": [
+    "dockerfile",
     "github-actions",
-    "helm-values"
+    "helm-values",
+    "dockerfile"
   ],
   "packageRules": [
     {
