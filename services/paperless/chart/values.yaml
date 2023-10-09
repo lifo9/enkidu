@@ -1,0 +1,79 @@
+name: paperless
+namespace: paperless
+app:
+  image:
+    repository: ghcr.io/paperless-ngx/paperless-ngx
+    tag: 1.17.4
+redis:
+  image:
+    repository: docker.io/redis
+    tag: 7.2.1-alpine3.18
+postgres:
+  image:
+    repository: postgres
+    tag: 16.0-alpine3.18
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ paperless_uid.stdout }}
+  runAsGroup: {{ paperless_gid.stdout }}
+  fsGroup: {{ paperless_gid.stdout }}
+
+resources:
+  app:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+  redis:
+    limits:
+      cpu: 300m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  postgres:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+network:
+  service_port_http: 8000
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/paperless"
+
+secrets:
+  app:
+    PAPERLESS_DBPASS: "{{ postgres_password }}"
+    PAPERLESS_EMAIL_HOST: "{{ smtp_host }}"
+    PAPERLESS_EMAIL_PORT: "{{ smtp_port }}"
+    PAPERLESS_EMAIL_HOST_USER: "{{ smtp_username }}"
+    PAPERLESS_EMAIL_HOST_PASSWORD: "{{ smtp_password }}"
+    PAPERLESS_EMAIL_USE_TLS: "true"
+  postgres:
+    POSTGRES_PASSWORD: "{{ postgres_password }}"
+
+env:
+  domain: "{{ domain }}"
+  postgres:
+    POSTGRES_DB: "{{ postgres_db }}"
+    POSTGRES_USER: "{{ postgres_user }}"
+  app:
+    PAPERLESS_REDIS: "redis://paperless-redis:6379"
+    PAPERLESS_DBHOST: "paperless-postgres"
+    USERMAP_UID: "{{ paperless_uid.stdout }}"
+    USERMAP_GID: "{{ paperless_gid.stdout }}"
+    PAPERLESS_OCR_LANGUAGES: "ces slk"
+    PAPERLESS_OCR_LANGUAGE: "slk+ces+eng"
+    PAPERLESS_BIND_ADDR: "0.0.0.0"
+    PAPERLESS_URL: "https://{{ domain }}"
+    PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://{{ domain }}"
+    PAPERLESS_OCR_OUTPUT_TYPE: "pdf"

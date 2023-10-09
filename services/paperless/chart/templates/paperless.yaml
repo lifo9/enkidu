@@ -1,0 +1,64 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-app
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-app
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      securityContext:
+        allowPrivilegeEscalation: false
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+      containers:
+      - image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        imagePullPolicy: IfNotPresent
+        name: {{ .Values.name }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-app
+        - secretRef:
+            name: {{ .Values.name }}-app
+        ports:
+        - containerPort: {{ .Values.network.service_port_http }}
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.network.service_port_http }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.network.service_port_http }}
+        volumeMounts:
+        - name: data
+          mountPath: /usr/src/paperless/data
+          subPath: app/data
+        - name: data
+          mountPath: /usr/src/paperless/media
+          subPath: app/media
+        - name: data
+          mountPath: /usr/src/paperless/export
+          subPath: app/export
+        - name: data
+          mountPath: /usr/src/paperless/consume
+          subPath: app/consume
+        {{- with .Values.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}
