@@ -49,3 +49,20 @@ spec:
   type: ClusterIP
   selector:
     app: {{ .Values.name }}-redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-brscan
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-brscan
+spec:
+  ports:
+  - name: brscan
+    protocol: UDP
+    port: {{ .Values.network.brscan_port }}
+    targetPort: {{ .Values.network.brscan_port }}
+  type: ClusterIP
+  selector:
+    app: {{ .Values.name }}-brscan

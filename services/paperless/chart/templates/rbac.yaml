@@ -16,7 +16,9 @@ rules:
     resources:
       - configmaps
     resourceNames:
-      - {{ .Values.name }}
+      - {{ .Values.name }}-app
+      - {{ .Values.name }}-postgres
+      - {{ .Values.name }}-brscan
     verbs:
       - get
   - apiGroups:

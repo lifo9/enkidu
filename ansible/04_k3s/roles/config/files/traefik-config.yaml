@@ -12,6 +12,14 @@ spec:
         expose: false
       websecure:
         exposedPort: 443
+      brscan:
+        port: 54925
+        exposedPort: 54925
+        expose: true
+        protocol: UDP
+    entryPoints:
+      brscan:
+        address: ":54925/udp"
     service:
       spec:
         externalTrafficPolicy: Local

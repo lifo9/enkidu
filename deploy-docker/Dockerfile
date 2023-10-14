@@ -33,6 +33,6 @@ RUN adduser -S deploy
 
 USER deploy
 
-RUN ansible-galaxy collection install kubernetes.core
+RUN ansible-galaxy collection install kubernetes.core community.general
 
 CMD [ "/bin/bash" ]

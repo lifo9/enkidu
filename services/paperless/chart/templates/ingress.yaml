@@ -15,3 +15,16 @@ spec:
     services:
     - name: {{ .Values.name }}-app
       port: {{ .Values.network.service_port_http }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteUDP
+metadata:
+  name: {{ .Values.name }}-brscan
+  namespace: {{ .Values.namespace }}
+spec:
+  entryPoints:
+    - brscan
+  routes:
+  - services:
+    - name: {{ .Values.name }}-brscan
+      port: {{ .Values.network.brscan_port }}

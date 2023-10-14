@@ -12,6 +12,10 @@ postgres:
   image:
     repository: postgres
     tag: 16.0-alpine3.18
+brscan:
+  image:
+    repository: {{ brscan_image_repository }}
+    tag: latest
 
 securityContext:
   runAsNonRoot: true
@@ -42,9 +46,17 @@ resources:
     requests:
       cpu: 250m
       memory: 256Mi
+  brscan:
+    limits:
+      cpu: 100m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
 
 network:
   service_port_http: 8000
+  brscan_port: 54925
 
 storage:
   node_name: "{{ ansible_hostname }}"
@@ -77,3 +89,7 @@ env:
     PAPERLESS_URL: "https://{{ domain }}"
     PAPERLESS_CSRF_TRUSTED_ORIGINS: "https://{{ domain }}"
     PAPERLESS_OCR_OUTPUT_TYPE: "pdf"
+  brscan:
+    SCANNER_MODEL: {{ scanner_model }}
+    SCANNER_IP: {{ scanner_ip }}
+    ADVERTISE_IP: {{ advertise_ip }}

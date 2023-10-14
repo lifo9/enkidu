@@ -22,3 +22,15 @@ data:
   {{- range $key, $val := .Values.env.postgres }}
   {{ $key }}: {{ $val | quote }}
   {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-brscan
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-brscan
+data:
+  {{- range $key, $val := .Values.env.brscan }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}

@@ -51,6 +51,7 @@
         - "{{ kube_app_data }}/paperless/app"
         - "{{ kube_app_data }}/paperless/postgres"
         - "{{ kube_app_data }}/paperless/redis"
+        - "{{ kube_app_data }}/paperless/brscan"
 
     - name: Create paperless app directories
       become: true
@@ -65,6 +66,15 @@
         - "{{ kube_app_data }}/paperless/app/data"
         - "{{ kube_app_data }}/paperless/app/export"
         - "{{ kube_app_data }}/paperless/app/media"
+
+    - name: Create brother-scan.yaml from template
+      become: true
+      ansible.builtin.template:
+        src: templates/brother-scan.yaml.j2
+        dest: "{{ kube_app_data }}/paperless/brscan/brother-scan.yaml"
+        owner: paperless
+        group: paperless
+        mode: "0600"
 
     - name: Create temporary build directory
       register: build_dir
@@ -103,3 +113,13 @@
         user: "uptimepush"
         minute: "*"
         job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Paperless-ngx" "{{ uptime_endpoint }}"'
+
+    - name: Allow brscan in UFW
+      become: true
+      community.general.ufw:
+        rule: "allow"
+        port: "54925"
+        proto: "udp"
+        from_ip: "any"
+        to_ip: "any"
+        direction: "in"

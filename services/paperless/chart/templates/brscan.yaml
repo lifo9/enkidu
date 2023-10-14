@@ -1,0 +1,48 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-brscan
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-brscan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-brscan
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-brscan
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      securityContext:
+        allowPrivilegeEscalation: false
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+      containers:
+      - image: {{ .Values.brscan.image.repository }}:{{ .Values.brscan.image.tag }}
+        imagePullPolicy: Always
+        name: {{ .Values.name }}-brscan
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-brscan
+        ports:
+        - name: brscan
+          protocol: UDP
+          containerPort: {{ .Values.network.brscan_port }}
+        volumeMounts:
+        - name: data
+          mountPath: /output
+          subPath: app/consume
+        - name: data
+          mountPath: /brother-scan.yaml
+          subPath: brscan/brother-scan.yaml
+        {{- with .Values.resources.brscan }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}
