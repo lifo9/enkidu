@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.11.6-slim
 ARG BRSCAN_DEB=brscan4-0.4.11-1.amd64.deb
 
 # This is where the scan output will be written to
@@ -9,7 +9,7 @@ EXPOSE 54925/udp
 
 # Install required Debian packages
 RUN apt-get update -q \
-  && apt-get install -q -y sane sane-utils poppler-utils libusb-0.1-4 \
+  && apt-get install --no-install-recommends -q -y sane sane-utils poppler-utils libusb-0.1-4 imagemagick \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
