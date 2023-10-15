@@ -17,9 +17,10 @@ spec:
         app: {{ .Values.name }}-brscan
     spec:
       serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
       securityContext:
-        allowPrivilegeEscalation: false
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - image: {{ .Values.brscan.image.repository }}:{{ .Values.brscan.image.tag }}
         imagePullPolicy: Always
@@ -38,6 +39,9 @@ spec:
         - name: data
           mountPath: /brother-scan.yaml
           subPath: brscan/brother-scan.yaml
+        - name: data
+          mountPath: /etc/opt/brother/scanner/brscan4/brsanenetdevice4.cfg
+          subPath: brscan/brsanenetdevice4.cfg
         {{- with .Values.resources.brscan }}
         resources:
         {{- toYaml . | nindent 10 }}

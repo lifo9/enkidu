@@ -76,6 +76,15 @@
         group: paperless
         mode: "0600"
 
+    - name: Create brother-scan.yaml from template
+      become: true
+      ansible.builtin.template:
+        src: templates/brsanenetdevice4.cfg.j2
+        dest: "{{ kube_app_data }}/paperless/brscan/brsanenetdevice4.cfg"
+        owner: paperless
+        group: paperless
+        mode: "0600"
+
     - name: Create temporary build directory
       register: build_dir
       ansible.builtin.tempfile:
