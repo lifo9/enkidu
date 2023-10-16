@@ -54,3 +54,4 @@ env:
   app:
     LISTEN_ADDR: "0.0.0.0:8080"
     BASE_URL: "https://{{ domain }}"
+    RUN_MIGRATIONS: "true"
