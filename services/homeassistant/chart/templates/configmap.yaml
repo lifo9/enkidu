@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-zigbee2mqtt
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-zigbee2mqtt
+data:
+  {{- range $key, $val := .Values.env.zigbee2mqtt }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-mqtt
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-mqtt
+data:
+  {{- range $key, $val := .Values.env.mqtt }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-homeassistant
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-homeassistant
+data:
+  {{- range $key, $val := .Values.env.homeassistant }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}

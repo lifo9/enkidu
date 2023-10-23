@@ -1,0 +1,54 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-homeassistant
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-homeassistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-homeassistant
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-homeassistant
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.name }}
+        image: {{ .Values.image.homeassistant.repository }}:{{ .Values.image.homeassistant.tag }}
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-homeassistant
+        ports:
+        - containerPort: {{ .Values.network.homeassistant_port }}
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.network.homeassistant_port }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.network.homeassistant_port }}
+        volumeMounts:
+          - name: data
+            mountPath: /config
+            subPath: homeassistant
+        {{- with .Values.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}

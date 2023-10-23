@@ -1,0 +1,46 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-mqtt
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-mqtt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-mqtt
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-mqtt
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.name }}
+        image: {{ .Values.image.mqtt.repository }}:{{ .Values.image.mqtt.tag }}
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-mqtt
+        ports:
+        - containerPort: {{ .Values.network.mqtt_port }}
+          name: mqtt
+          protocol: TCP
+        volumeMounts:
+          - name: data
+            mountPath: /mosquitto/config/
+            subPath: mqtt
+        {{- with .Values.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}

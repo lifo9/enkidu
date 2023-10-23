@@ -1,0 +1,9 @@
+kube_app_data: /kube/app_data
+homeassistant_domain: "{{ lookup('env', 'HOMEASSISTANT_DOMAIN') }}"
+zigbee2mqtt_domain: "{{ lookup('env', 'ZIGBEE2MQTT_DOMAIN') }}"
+homeassistant_uptime_endpoint: "{{ lookup('env', 'HOMEASSISTANT_UPTIME_ENDPOINT') }}"
+zigbee2mqtt_uptime_endpoint: "{{ lookup('env', 'ZIGBEE2MQTT_UPTIME_ENDPOINT') }}"
+ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+tz: "{{ lookup('env', 'TZ') }}"
+zigbee_stick_dev_path: "{{ lookup('env', 'ZIGBEE_STICK_DEV_PATH') }}"
+zigbee2mqtt_password: "{{ lookup('env', 'ZIGBEE2MQTT_PASSWWORD') }}"

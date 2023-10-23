@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-zigbee2mqtt
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-zigbee2mqtt
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.network.zigbee2mqtt_port }}
+    protocol: TCP
+    targetPort: {{ .Values.network.zigbee2mqtt_port }}
+  type: ClusterIP
+  selector:
+    app: {{ .Values.name }}-zigbee2mqtt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-mqtt
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-mqtt
+spec:
+  ports:
+  - name: mqtt
+    port: {{ .Values.network.mqtt_port }}
+    protocol: TCP
+    targetPort: {{ .Values.network.mqtt_port }}
+  type: ClusterIP
+  selector:
+    app: {{ .Values.name }}-mqtt
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-homeassistant
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-homeassistant
+spec:
+  ports:
+  - name: http
+    port: {{ .Values.network.homeassistant_port }}
+    protocol: TCP
+    targetPort: {{ .Values.network.homeassistant_port }}
+  type: ClusterIP
+  selector:
+    app: {{ .Values.name }}-homeassistant

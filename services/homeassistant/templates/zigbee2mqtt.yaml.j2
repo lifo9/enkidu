@@ -1,0 +1,13 @@
+homeassistant: true
+permit_join: false
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://homeassistant-mqtt.homeassistant.svc.cluster.local
+serial:
+  port: tcp://{{ hostvars['server']['ansible_host'] }}:3333
+  adapter: auto
+  disable_led: true
+frontend:
+  port: 8080
+  host: 0.0.0.0
+  auth_token: {{ zigbee2mqtt_password }}

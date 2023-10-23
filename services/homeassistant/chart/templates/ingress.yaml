@@ -1,0 +1,52 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.name }}-zigbee2mqtt
+  namespace: {{ .Values.namespace }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.env.zigbee2mqtt_domain }}`) && PathPrefix(`/`)
+    middlewares:
+      - name: {{ .Values.name }}-ipwhitelist
+        namespace: {{ .Values.namespace }}
+    services:
+    - name: {{ .Values.name }}-zigbee2mqtt
+      port: {{ .Values.network.zigbee2mqtt_port }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.name }}-homeassistant
+  namespace: {{ .Values.namespace }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - kind: Rule
+    match: Host(`{{ .Values.env.homeassistant_domain }}`) && PathPrefix(`/`)
+    middlewares:
+      - name: {{ .Values.name }}-ipwhitelist
+        namespace: {{ .Values.namespace }}
+    services:
+    - name: {{ .Values.name }}-homeassistant
+      port: {{ .Values.network.homeassistant_port }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.name }}-ipwhitelist
+  namespace: {{ .Values.namespace }}
+spec:
+  ipWhiteList:
+    sourceRange:
+    {{- range $ip := splitList "," .Values.network.ip_whitelist }}
+      - "{{ $ip }}"
+    {{- end }}

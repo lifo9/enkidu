@@ -1,0 +1,63 @@
+name: homeassistant
+namespace: homeassistant
+image:
+  zigbee2mqtt:
+    repository: docker.io/koenkk/zigbee2mqtt
+    tag: 1.33.1
+  mqtt:
+    repository: docker.io/eclipse-mosquitto
+    tag: 2.0.18
+  homeassistant:
+    repository: ghcr.io/home-assistant/home-assistant
+    tag: 2023.10.5
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ homeassistant_uid.stdout }}
+  runAsGroup: {{ homeassistant_gid.stdout }}
+  fsGroup: {{ homeassistant_gid.stdout }}
+
+resources:
+  zigbee2mqtt:
+    limits:
+      cpu: 0.5
+      memory: 512Mi
+    requests:
+      cpu: 0.2
+      memory: 256Mi
+  mqtt:
+    limits:
+      cpu: 0.5
+      memory: 512Mi
+    requests:
+      cpu: 0.2
+      memory: 256Mi
+  homeassistant:
+    limits:
+      cpu: 1.5
+      memory: 2Gi
+    requests:
+      cpu: 0.5
+      memory: 512Mi
+
+network:
+  zigbee2mqtt_port: 8080
+  mqtt_port: 1883
+  homeassistant_port: 8081
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/homeassistant"
+
+env:
+  homeassistant_domain: "{{ homeassistant_domain }}"
+  zigbee2mqtt_domain: "{{ zigbee2mqtt_domain }}"
+  zigbee_stick_dev_path: "{{ zigbee_stick_dev_path }}"
+  zigbee2mqtt:
+    TZ: "{{ tz }}"
+    ZIGBEE2MQTT_DATA: "/data"
+  mqtt:
+  homeassistant:
+

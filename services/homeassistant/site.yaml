@@ -1,0 +1,236 @@
+- name: Home Assistant
+  hosts: server
+  vars_files:
+    - vars/main.yaml
+  tasks:
+    - name: Install ser2net
+      become: true
+      ansible.builtin.package:
+        name: ser2net
+        state: present
+
+    - name: Enable ser2net service
+      become: true
+      ansible.builtin.service:
+        name: ser2net
+        state: started
+        enabled: true
+
+    - name: Configure ser2net
+      become: true
+      ansible.builtin.template:
+        src: templates/ser2net.yaml.j2
+        dest: /etc/ser2net.yaml
+        mode: "0600"
+        owner: homeassistant
+        group: homeassistant
+      notify: Restart ser2net
+
+    - name: Allow ser2net in UFW
+      become: true
+      community.general.ufw:
+        rule: "allow"
+        port: "3333"
+        proto: "tcp"
+        from_ip: "any"
+        to_ip: "any"
+        direction: "in"
+
+    - name: Create homeassistant user
+      become: true
+      ansible.builtin.user:
+        name: homeassistant
+        state: present
+        shell: /usr/sbin/nologin
+        system: false
+        create_home: false
+
+    - name: Get uid and gid of user
+      ansible.builtin.command: id -u homeassistant
+      register: homeassistant_uid
+      changed_when: false
+
+    - name: Get gid of user
+      ansible.builtin.command: id -g homeassistant
+      register: homeassistant_gid
+      changed_when: false
+
+    - name: Create homeassistant k8s namespace
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Namespace
+        name: homeassistant
+        namespace: homeassistant
+        state: present
+
+    - name: Create homeassistant directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/homeassistant"
+        state: directory
+        owner: homeassistant
+        group: homeassistant
+        mode: "0700"
+
+    - name: Create zigbee2mqtt directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/homeassistant/zigbee2mqtt"
+        state: directory
+        owner: homeassistant
+        group: homeassistant
+        mode: "0700"
+
+    - name: Configure zigbee2mqtt base.yaml
+      become: true
+      ansible.builtin.template:
+        src: templates/zigbee2mqtt.yaml.j2
+        dest: "{{ kube_app_data }}/homeassistant/zigbee2mqtt/base.yaml"
+        mode: "0600"
+        owner: homeassistant
+        group: homeassistant
+
+    - name: Ensure zigbee2mqtt configuration.yaml exists
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/homeassistant/zigbee2mqtt/configuration.yaml"
+        state: touch
+        owner: homeassistant
+        group: homeassistant
+        mode: "0600"
+
+    - name: Read zigbee2mqtt base.yaml configuration file
+      become: true
+      ansible.builtin.command: "sudo cat {{ kube_app_data }}/homeassistant/zigbee2mqtt/base.yaml"
+      register: zigbee_base_config_file_content
+      changed_when: false
+
+    - name: Set zigbee_base_config variable
+      ansible.builtin.set_fact:
+        zigbee_base_config: "{{ zigbee_base_config_file_content.stdout | from_yaml }}"
+
+    - name: Read existing zigbee2mqtt configuration file
+      become: true
+      ansible.builtin.command: "sudo cat {{ kube_app_data }}/homeassistant/zigbee2mqtt/configuration.yaml"
+      register: zigbee_existing_config_file_content
+      changed_when: false
+
+    - name: Set zigbee_existing_config variable
+      become: true
+      ansible.builtin.set_fact:
+        zigbee_existing_config: "{{ zigbee_existing_config_file_content.stdout | from_yaml }}"
+
+    - name: Merge zigbee_existing_config and zigbee_base_config
+      ansible.builtin.set_fact:
+        zigbee_final_config: "{{ zigbee_existing_config | combine(zigbee_base_config) }}"
+
+    - name: Create final zigbee2mqtt config
+      become: true
+      ansible.builtin.copy:
+        content: "{{ zigbee_final_config | to_nice_yaml }}"
+        dest: "{{ kube_app_data }}/homeassistant/zigbee2mqtt/configuration.yaml"
+        owner: homeassistant
+        group: homeassistant
+        mode: "0600"
+
+    - name: Create mqtt directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/homeassistant/mqtt"
+        state: directory
+        owner: homeassistant
+        group: homeassistant
+        mode: "0700"
+
+    - name: Configure mosquitto
+      become: true
+      ansible.builtin.template:
+        src: templates/mosquitto.conf
+        dest: "{{ kube_app_data }}/homeassistant/mqtt/mosquitto.conf"
+        mode: "0600"
+        owner: homeassistant
+        group: homeassistant
+
+    - name: Create homeassistant config directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/homeassistant/homeassistant"
+        state: directory
+        owner: homeassistant
+        group: homeassistant
+        mode: "0700"
+
+    - name: Configure homeassistant
+      become: true
+      ansible.builtin.template:
+        src: templates/homeassistant.yaml
+        dest: "{{ kube_app_data }}/homeassistant/homeassistant/configuration.yaml"
+        mode: "0600"
+        owner: homeassistant
+        group: homeassistant
+
+    - name: Ensure homeassistant templates exist
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/homeassistant/homeassistant/{{ item }}"
+        state: touch
+        owner: homeassistant
+        group: homeassistant
+        mode: "0600"
+      loop:
+        - "automations.yaml"
+        - "scripts.yaml"
+        - "scenes.yaml"
+
+    - name: Create temporary build directory
+      register: build_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: homeassistant
+
+    - name: Copy helm chart to target
+      ansible.builtin.copy:
+        src: chart/
+        dest: "{{ build_dir.path }}"
+        mode: "0700"
+
+    - name: Create values.yaml from template
+      ansible.builtin.template:
+        src: chart/values.yaml
+        dest: "{{ build_dir.path }}/values.yaml"
+        mode: "0600"
+
+    - name: Install homeassistant helm chart
+      kubernetes.core.helm:
+        chart_ref: "{{ build_dir.path }}"
+        name: "homeassistant"
+        namespace: "homeassistant"
+        state: present
+
+    - name: Cleanup
+      ansible.builtin.file:
+        state: absent
+        path: "{{ build_dir.path }}"
+
+    - name: Create homeassistant uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "homeassistant uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ homeassistant_domain }}/" "Home Assistant" "{{ homeassistant_uptime_endpoint }}"'
+
+    - name: Create zigbee2mqtt uptime-push cronjob
+      become: true
+      ansible.builtin.cron:
+        name: "zigbee2mqtt uptime-push"
+        user: "uptimepush"
+        minute: "*"
+        job: '/usr/local/bin/uptime-push "https://{{ zigbee2mqtt_domain }}/" "Zigbee2MQTT" "{{ zigbee2mqtt_uptime_endpoint }}"'
+
+  handlers:
+    - name: Restart ser2net
+      become: true
+      ansible.builtin.service:
+        name: ser2net
+        state: restarted

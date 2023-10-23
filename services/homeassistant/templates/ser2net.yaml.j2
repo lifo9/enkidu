@@ -1,0 +1,7 @@
+define: &banner \r\nser2net port \p device \d [\B] (Debian GNU/Linux)\r\n\r\n
+
+connection: &zigbee_stick
+  accepter: tcp,3333
+  connector: serialdev,{{ zigbee_stick_dev_path }},115200n81,local,dtr=off,rts=off
+  options:
+    kickolduser: true
