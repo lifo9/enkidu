@@ -3,7 +3,7 @@ namespace: qbittorrent
 app:
   image:
     repository: ghcr.io/linuxserver/qbittorrent
-    tag: 4.5.5
+    tag: 4.6.0
 gluetun:
   image:
     repository: ghcr.io/qdm12/gluetun
