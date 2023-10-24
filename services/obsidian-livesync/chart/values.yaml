@@ -1,0 +1,36 @@
+name: obsidian-livesync
+namespace: obsidian-livesync
+image:
+  repository: docker.io/couchdb
+  tag: 3.3.2
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ obsidian_livesync_uid.stdout }}
+  runAsGroup: {{ obsidian_livesync_gid.stdout }}
+  fsGroup: {{ obsidian_livesync_gid.stdout }}
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+
+network:
+  service_port_http: 5984
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/obsidian_livesync"
+
+secrets:
+  COUCHDB_USER: "{{ couchdb_user }}"
+  COUCHDB_PASSWORD: "{{ couchdb_password }}"
+
+env:
+  domain: "{{ domain }}"

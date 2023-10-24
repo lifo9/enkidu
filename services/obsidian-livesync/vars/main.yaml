@@ -1,0 +1,6 @@
+kube_app_data: /kube/app_data
+domain: "{{ lookup('env', 'DOMAIN') }}"
+uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
+ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+couchdb_user: "{{ lookup('env', 'COUCHDB_USER') }}"
+couchdb_password: "{{ lookup('env', 'COUCHDB_PASSWORD') }}"
