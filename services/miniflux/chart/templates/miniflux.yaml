@@ -42,7 +42,3 @@ spec:
           httpGet:
             path: /
             port: {{ .Values.network.service_port_http }}
-        {{- with .Values.resources }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}

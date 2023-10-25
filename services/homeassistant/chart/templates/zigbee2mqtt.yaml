@@ -44,10 +44,6 @@ spec:
           - name: data
             mountPath: /data
             subPath: zigbee2mqtt
-        {{- with .Values.resources }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:

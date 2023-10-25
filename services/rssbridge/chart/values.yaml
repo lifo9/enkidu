@@ -11,14 +11,6 @@ securityContext:
   runAsGroup: {{ rssbridge_gid.stdout }}
   fsGroup: {{ rssbridge_gid.stdout }}
 
-resources:
-  limits:
-    cpu: 300m
-    memory: 512Mi
-  requests:
-    cpu: 50m
-    memory: 256Mi
-
 network:
   service_port_http: 8080
   ip_whitelist: "{{ ip_whitelist }}"

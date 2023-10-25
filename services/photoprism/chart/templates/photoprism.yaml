@@ -57,10 +57,6 @@ spec:
         - name: photos
           mountPath: /photoprism/originals
           subPath: originals
-        {{- with .Values.resources.photoprism }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:

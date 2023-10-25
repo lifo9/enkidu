@@ -42,10 +42,6 @@ spec:
         - name: data
           mountPath: /etc/opt/brother/scanner/brscan4/brsanenetdevice4.cfg
           subPath: brscan/brsanenetdevice4.cfg
-        {{- with .Values.resources.brscan }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:

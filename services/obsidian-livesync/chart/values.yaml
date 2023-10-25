@@ -11,15 +11,6 @@ securityContext:
   runAsGroup: {{ obsidian_livesync_gid.stdout }}
   fsGroup: {{ obsidian_livesync_gid.stdout }}
 
-resources:
-  limits:
-    cpu: 500m
-    memory: 512Mi
-  requests:
-    cpu: 250m
-    memory: 256Mi
-
-
 network:
   service_port_http: 5984
   ip_whitelist: "{{ ip_whitelist }}"

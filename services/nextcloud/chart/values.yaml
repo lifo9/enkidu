@@ -20,29 +20,6 @@ securityContext:
   runAsGroup: {{ nextcloud_gid.stdout }}
   fsGroup: {{ nextcloud_gid.stdout }}
 
-resources:
-  app:
-    limits:
-      cpu: 2
-      memory: 4Gi
-    requests:
-      cpu: 1
-      memory: 2Gi
-  redis:
-    limits:
-      cpu: 300m
-      memory: 512Mi
-    requests:
-      cpu: 200m
-      memory: 256Mi
-  mariadb:
-    limits:
-      cpu: 1
-      memory: 2Gi
-    requests:
-      cpu: 500m
-      memory: 1Gi
-
 network:
   service_port_http: {{ service_port_http }}
   ip_whitelist: "{{ ip_whitelist }}"

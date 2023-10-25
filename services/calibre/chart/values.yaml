@@ -10,14 +10,6 @@ securityContext:
   # the initialization finishes...
   fsGroup: {{ calibre_gid.stdout }}
 
-resources:
-  limits:
-    cpu: 300m
-    memory: 1Gi
-  requests:
-    cpu: 150m
-    memory: 512Mi
-
 network:
   calibre_port_http: 8080
   calibre_web_port_http: 8082

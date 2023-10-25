@@ -46,10 +46,6 @@ spec:
         - name: data
           mountPath: /var/lib/mysql
           subPath: db
-        {{- with .Values.resources.mariadb }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:

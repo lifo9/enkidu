@@ -35,10 +35,6 @@ spec:
             name: {{ .Values.name }}-gluetun
         - secretRef:
             name: {{ .Values.name }}-gluetun
-        {{- with .Values.resources.gluetun }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       - name: {{ .Values.name }}-app
         image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
         imagePullPolicy: IfNotPresent
@@ -47,10 +43,6 @@ spec:
             name: {{ .Values.name }}-app
         - secretRef:
             name: {{ .Values.name }}-app
-        {{- with .Values.resources.app }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
         ports:
         - containerPort: {{ .Values.network.service_port_http }}
           name: http

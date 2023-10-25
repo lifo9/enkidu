@@ -44,10 +44,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
-        {{- with .Values.resources.postgres }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:

@@ -11,15 +11,6 @@ securityContext:
   runAsGroup: {{ metube_gid.stdout }}
   fsGroup: {{ metube_gid.stdout }}
 
-resources:
-  limits:
-    cpu: 500m
-    memory: 512Mi
-  requests:
-    cpu: 250m
-    memory: 256Mi
-
-
 network:
   service_port_http: 8081
   ip_whitelist: "{{ ip_whitelist }}"

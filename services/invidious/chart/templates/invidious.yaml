@@ -40,7 +40,3 @@ spec:
           httpGet:
             path: /
             port: http
-        {{- with .Values.resources }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}

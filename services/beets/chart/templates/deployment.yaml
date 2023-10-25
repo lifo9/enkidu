@@ -48,10 +48,6 @@ spec:
           name: music
         - mountPath: /downloads
           name: downloads
-        {{- with .Values.resources }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:

@@ -48,10 +48,6 @@ spec:
           subPath: cron.sh
         - name: data
           mountPath: /var/www/html/data
-        {{- with .Values.resources.app }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: app
         persistentVolumeClaim:

@@ -16,22 +16,6 @@ securityContext:
   runAsGroup: {{ photoprism_gid.stdout }}
   fsGroup: {{ photoprism_gid.stdout }}
 
-resources:
-  photoprism:
-    limits:
-      cpu: 3
-      memory: 8Gi
-    requests:
-      cpu: 2
-      memory: 4Gi
-  mariadb:
-    limits:
-      cpu: 2
-      memory: 2Gi
-    requests:
-      cpu: 1
-      memory: 1Gi
-
 network:
   service_port_http: {{ service_port_http }}
 

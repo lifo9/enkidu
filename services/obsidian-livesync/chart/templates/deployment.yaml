@@ -30,10 +30,6 @@ spec:
             name: {{ .Values.name }}
         - secretRef:
             name: {{ .Values.name }}
-        {{- with .Values.resources }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
         ports:
         - containerPort: {{ .Values.network.service_port_http }}
           name: http

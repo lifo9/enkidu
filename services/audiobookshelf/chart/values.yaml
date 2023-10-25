@@ -11,14 +11,6 @@ securityContext:
   runAsGroup: {{ audiobookshelf_gid.stdout }}
   fsGroup: {{ audiobookshelf_gid.stdout }}
 
-resources:
-  limits:
-    cpu: 2
-    memory: 3Gi
-  requests:
-    cpu: 1
-    memory: 2Gi
-
 network:
   service_port_http: 13378
   ip_whitelist: "{{ ip_whitelist }}"

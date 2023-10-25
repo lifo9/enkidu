@@ -39,10 +39,6 @@ spec:
         - name: files
           mountPath: /etc/subgid
           subPath: subgid
-        {{- with .Values.resources.runner }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:

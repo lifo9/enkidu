@@ -11,14 +11,6 @@ securityContext:
   runAsGroup: {{ jellyfin_gid.stdout }}
   fsGroup: {{ jellyfin_gid.stdout }}
 
-resources:
-  limits:
-    cpu: 1.0
-    memory: 4G
-  requests:
-    cpu: 0.5
-    memory: 2G
-
 network:
   service_port_http: 8003
 

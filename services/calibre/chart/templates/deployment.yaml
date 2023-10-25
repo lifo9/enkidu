@@ -49,10 +49,6 @@ spec:
           subPath: override/init-kasmvnc-config
         - mountPath: /books
           name: books
-        {{- with .Values.resources }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:

@@ -33,10 +33,6 @@ spec:
             command: ["redis-cli", "ping"]
           initialDelaySeconds: 30
           periodSeconds: 10
-        {{- with .Values.resources.redis }}
-        resources:
-        {{- toYaml . | nindent 10 }}
-        {{- end }}
         volumeMounts:
         - name: data
           mountPath: /data

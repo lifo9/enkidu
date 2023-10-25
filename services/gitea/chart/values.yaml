@@ -20,29 +20,6 @@ securityContext:
   runAsGroup: {{ gitea_gid.stdout }}
   fsGroup: {{ gitea_gid.stdout }}
 
-resources:
-  app:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 250m
-      memory: 256Mi
-  runner:
-    limits:
-      cpu: 2
-      memory: 2Gi
-    requests:
-      cpu: 500m
-      memory: 512Mi
-  postgres:
-    limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 250m
-      memory: 256Mi
-
 network:
   service_port_http: 8080
   service_port_ssh: 2222
