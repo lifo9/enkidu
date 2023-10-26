@@ -1,0 +1,71 @@
+---
+apiVersion: "apps/v1"
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-app
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-app
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      {{- with .Values.securityContext }}
+      securityContext:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.name }}
+        image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+        imagePullPolicy: IfNotPresent
+        command: ["/data/var/entrypoint.sh"]
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.name }}-app
+        - secretRef:
+            name: {{ .Values.name }}-app
+        ports:
+        - containerPort: {{ .Values.network.nginx_port }}
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.network.nginx_port }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.network.nginx_port }}
+        volumeMounts:
+        - name: data
+          mountPath: /data
+          subPath: app
+        - name: data
+          mountPath: /var/www/wallabag/var
+          subPath: app/var
+        - name: config
+          mountPath: /var/www/wallabag/app/config/parameters.yml
+          subPath: parameters.yml
+        - name: config
+          mountPath: /etc/php81/php-fpm.conf
+          subPath: php-fpm.conf
+        - name: config
+          mountPath: /etc/php81/php.ini
+          subPath: php.ini
+        - name: config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+         claimName: {{ .Values.name }}
+      - name: config
+        configMap:
+          name: {{ .Values.name }}-config

@@ -1,0 +1,10 @@
+kube_app_data: /kube/app_data
+domain: "{{ lookup('env', 'DOMAIN') }}"
+uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
+ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+postgres_db: "{{ lookup('env', 'POSTGRES_DB') }}"
+postgres_user: "{{ lookup('env', 'POSTGRES_USER') }}"
+postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+wallabag_secret: "{{ lookup('env', 'WALLABAG_SECRET') }}"
+wallabag_mailer_dsn: "{{ lookup('env', 'WALLABAG_MAILER_DSN') }}"
+wallabag_from_email: "{{ lookup('env', 'WALLABAG_FROM_EMAIL') }}"

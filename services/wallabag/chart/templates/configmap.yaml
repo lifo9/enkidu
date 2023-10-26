@@ -1,0 +1,326 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-app
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-app
+data:
+  {{- range $key, $val := .Values.env.app }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-postgres
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-postgres
+data:
+  {{- range $key, $val := .Values.env.postgres }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-app
+data:
+  parameters.yml: |
+    # This file is auto-generated during the composer install
+    parameters:
+        database_driver: {{ .Values.env.app.SYMFONY__ENV__DATABASE_DRIVER }}
+        database_host: {{ .Values.env.app.SYMFONY__ENV__DATABASE_HOST }}
+        database_port: {{ .Values.env.app.SYMFONY__ENV__DATABASE_PORT }}
+        database_name: {{ .Values.env.app.SYMFONY__ENV__DATABASE_NAME }}
+        database_user: {{ .Values.env.app.POSTGRES_USER }}
+        database_password: {{ .Values.secrets.app.POSTGRES_PASSWORD }}
+        database_path: null
+        database_table_prefix: wallabag_
+        database_socket: null
+        database_charset: utf8
+        domain_name: "{{ .Values.env.app.DOMAIN_NAME }}"
+        server_name: 'Wallabag'
+        mailer_dsn: "{{ .Values.secrets.app.WALLABAG_MAILER_DSN }}"
+        locale: en
+        secret: "{{ .Values.secrets.app.WALLABAG_SECRET }}"
+        twofactor_sender: "{{ .Values.env.app.WALLABAG_FROM_EMAIL }}"
+        fosuser_registration: false
+        fosuser_confirmation: false
+        fos_oauth_server_access_token_lifetime: 3600
+        fos_oauth_server_refresh_token_lifetime: 1209600
+        from_email: "{{ .Values.env.app.WALLABAG_FROM_EMAIL }}"
+        rss_limit: 50
+        rabbitmq_host: localhost
+        rabbitmq_port: 5672
+        rabbitmq_user: guest
+        rabbitmq_password: guest
+        rabbitmq_prefetch_count: 10
+        redis_scheme: tcp
+        redis_host: redis
+        redis_port: 6379
+        redis_path: null
+        redis_password: null
+        sentry_dsn: null
+  php-fpm.conf: |
+    error_log = /tmp/php-fpm.log
+    pid = /tmp/php-fpm.pid
+    [www]
+    listen = 127.0.0.1:9000
+    pm = dynamic
+    pm.max_children = 5
+    pm.start_servers = 2
+    pm.min_spare_servers = 1
+    pm.max_spare_servers = 3
+    env[PATH] = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  php.ini: |
+    [PHP]
+    engine = On
+    short_open_tag = Off
+    asp_tags = Off
+    precision = 14
+    output_buffering = 4096
+    zlib.output_compression = On
+    implicit_flush = Off
+    unserialize_callback_func =
+    serialize_precision = 17
+    disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,
+    disable_classes =
+    zend.enable_gc = On
+    expose_php = Off
+    max_execution_time = 300
+    max_input_time = 60
+    memory_limit = 128M
+    error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
+    display_errors = Off
+    display_startup_errors = Off
+    log_errors = On
+    log_errors_max_len = 1024
+    ignore_repeated_errors = Off
+    ignore_repeated_source = Off
+    report_memleaks = On
+    track_errors = Off
+    html_errors = On
+    variables_order = "GPCS"
+    request_order = "GP"
+    register_argc_argv = Off
+    auto_globals_jit = On
+    post_max_size = 100M
+    auto_prepend_file =
+    auto_append_file =
+    default_mimetype = "text/html"
+    doc_root =
+    user_dir =
+    enable_dl = Off
+    file_uploads = On
+    upload_tmp_dir = /tmp/
+    upload_max_filesize = 100M
+    max_file_uploads = 20
+    allow_url_fopen = On
+    allow_url_include = Off
+    default_socket_timeout = 60
+    [CLI Server]
+    cli_server.color = On
+    [Date]
+    [filter]
+    [iconv]
+    [intl]
+    [sqlite]
+    [sqlite3]
+    [Pcre]
+    [Pdo]
+    [Pdo_mysql]
+    pdo_mysql.cache_size = 2000
+    pdo_mysql.default_socket=
+    [Phar]
+    [mail function]
+    SMTP = localhost
+    smtp_port = 25
+    mail.add_x_header = On
+    [SQL]
+    sql.safe_mode = Off
+    [ODBC]
+    odbc.allow_persistent = On
+    odbc.check_persistent = On
+    odbc.max_persistent = -1
+    odbc.max_links = -1
+    odbc.defaultlrl = 4096
+    odbc.defaultbinmode = 1
+    [Interbase]
+    ibase.allow_persistent = 1
+    ibase.max_persistent = -1
+    ibase.max_links = -1
+    ibase.timestampformat = "%Y-%m-%d %H:%M:%S"
+    ibase.dateformat = "%Y-%m-%d"
+    ibase.timeformat = "%H:%M:%S"
+    [MySQL]
+    mysql.allow_local_infile = On
+    mysql.allow_persistent = On
+    mysql.cache_size = 2000
+    mysql.max_persistent = -1
+    mysql.max_links = -1
+    mysql.default_port =
+    mysql.default_socket =
+    mysql.default_host =
+    mysql.default_user =
+    mysql.default_password =
+    mysql.connect_timeout = 60
+    mysql.trace_mode = Off
+    [MySQLi]
+    mysqli.max_persistent = -1
+    mysqli.allow_persistent = On
+    mysqli.max_links = -1
+    mysqli.cache_size = 2000
+    mysqli.default_port = 3306
+    mysqli.default_socket =
+    mysqli.default_host =
+    mysqli.default_user =
+    mysqli.default_pw =
+    mysqli.reconnect = Off
+    [mysqlnd]
+    mysqlnd.collect_statistics = On
+    mysqlnd.collect_memory_statistics = Off
+    [OCI8]
+    [PostgreSQL]
+    pgsql.allow_persistent = On
+    pgsql.auto_reset_persistent = Off
+    pgsql.max_persistent = -1
+    pgsql.max_links = -1
+    pgsql.ignore_notice = 0
+    pgsql.log_notice = 0
+    [Sybase-CT]
+    sybct.allow_persistent = On
+    sybct.max_persistent = -1
+    sybct.max_links = -1
+    sybct.min_server_severity = 10
+    sybct.min_client_severity = 10
+    [bcmath]
+    bcmath.scale = 0
+    [browscap]
+    [Session]
+    session.save_handler = files
+    session.use_strict_mode = 0
+    session.use_cookies = 1
+    session.use_only_cookies = 1
+    session.name = PHPSESSID
+    session.auto_start = 0
+    session.cookie_lifetime = 0
+    session.cookie_path = /
+    session.cookie_domain =
+    session.cookie_httponly =
+    session.serialize_handler = php
+    session.gc_probability = 0
+    session.gc_divisor = 1000
+    session.gc_maxlifetime = 1440
+    session.bug_compat_42 = Off
+    session.bug_compat_warn = Off
+    session.referer_check =
+    session.cache_limiter = nocache
+    session.cache_expire = 180
+    session.use_trans_sid = 0
+    session.hash_function = 0
+    session.hash_bits_per_character = 5
+    url_rewriter.tags = "a=href,area=href,frame=src,input=src,form=fakeentry"
+    [MSSQL]
+    mssql.allow_persistent = On
+    mssql.max_persistent = -1
+    mssql.max_links = -1
+    mssql.min_error_severity = 10
+    mssql.min_message_severity = 10
+    mssql.compatibility_mode = Off
+    mssql.secure_connection = Off
+    [Assertion]
+    [COM]
+    [mbstring]
+    [gd]
+    [exif]
+    [Tidy]
+    tidy.clean_output = Off
+    [soap]
+    soap.wsdl_cache_enabled=1
+    soap.wsdl_cache_dir="/tmp"
+    soap.wsdl_cache_ttl=86400
+    soap.wsdl_cache_limit = 5
+    [sysvshm]
+    [ldap]
+    ldap.max_links = -1
+    [mcrypt]
+    [dba]
+    [opcache]
+    [curl]
+  nginx.conf: |
+    worker_processes  1;
+    pid        /tmp/nginx.pid;
+
+    events {
+        worker_connections  2048;
+        multi_accept on;
+        use epoll;
+    }
+
+    http {
+        server_tokens off;
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 15;
+        types_hash_max_size 2048;
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        access_log /tmp/access.log;
+        error_log /tmp/error.log;
+        gzip on;
+        gzip_disable "msie6";
+        open_file_cache max=100;
+        client_max_body_size 100M;
+        client_body_temp_path /tmp/client_body;
+        fastcgi_temp_path /tmp/fastcgi_temp;
+        proxy_temp_path /tmp/proxy_temp;
+        scgi_temp_path /tmp/scgi_temp;
+        uwsgi_temp_path /tmp/uwsgi_temp;
+
+        map $http_x_forwarded_proto $fe_https {
+            default $https;
+            https on;
+        }
+
+        upstream php-upstream {
+            server 127.0.0.1:9000;
+        }
+
+        server {
+            listen 0.0.0.0:8080;
+            server_name _;
+            root /var/www/wallabag/web;
+
+            location / {
+                # try to serve file directly, fallback to app.php
+                try_files $uri /app.php$is_args$args;
+            }
+
+            location ~ ^/app\.php(/|$) {
+                fastcgi_pass php-upstream;
+                fastcgi_split_path_info ^(.+\.php)(/.*)$;
+                include fastcgi_params;
+                # When you are using symlinks to link the document root to the
+                # current version of your application, you should pass the real
+                # application path instead of the path to the symlink to PHP
+                # FPM.
+                # Otherwise, PHP's OPcache may not properly detect changes to
+                # your PHP files (see https://github.com/zendtech/ZendOptimizerPlus/issues/126
+                # for more information).
+                fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
+                fastcgi_param DOCUMENT_ROOT $realpath_root;
+                # Prevents URIs that include the front controller. This will 404:
+                # http://domain.tld/app.php/some-path
+                # Remove the internal directive to allow URIs like this
+                internal;
+            }
+        }
+    }
+

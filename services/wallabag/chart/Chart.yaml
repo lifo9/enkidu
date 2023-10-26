@@ -1,0 +1,6 @@
+apiVersion: v2
+name: Wallabag
+description: A Helm chart to install Wallabag
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
