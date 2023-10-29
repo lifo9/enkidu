@@ -78,3 +78,11 @@
   kubernetes.core.k8s:
     state: present
     template: files/upgrade-plan.yaml
+
+- name: Install kill-k3s script
+  ansible.builtin.template:
+    src: "templates/kill-k3s.j2"
+    dest: /usr/local/bin/kill-k3s
+    owner: root
+    group: root
+    mode: "0755"
