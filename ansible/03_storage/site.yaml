@@ -21,3 +21,7 @@
         owner: root
         group: root
         mode: "0644"
+
+    - name: Rebuild initramfs
+      ansible.builtin.command: update-initramfs -u -k all
+      changed_when: false

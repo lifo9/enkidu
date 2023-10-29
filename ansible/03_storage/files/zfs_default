@@ -107,4 +107,4 @@ ZFS_DKMS_DISABLE_STRIP='no'
 # Optional arguments for the ZFS Event Daemon (ZED).
 # See zed(8) for more information on available options.
 #ZED_ARGS="-M"
-ZFS_INITRD_ADDITIONAL_DATASETS="tank/storage"
+ZFS_INITRD_ADDITIONAL_DATASETS="tank/storage tank/storage/backup tank/storage/backup/kube tank/storage/backup/kube/app_data tank/storage/backup/kube/kube_data"
