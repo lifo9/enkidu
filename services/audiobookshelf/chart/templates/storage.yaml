@@ -83,6 +83,7 @@ spec:
     requests:
       storage: 1000P
   storageClassName: "local-storage"
+  volumeName: {{ .Values.name }}-data
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -96,6 +97,7 @@ spec:
     requests:
       storage: 1000P
   storageClassName: "local-storage"
+  volumeName: {{ .Values.name }}-audiobooks
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -109,3 +111,4 @@ spec:
     requests:
       storage: 1000P
   storageClassName: "local-storage"
+  volumeName: {{ .Values.name }}-podcasts

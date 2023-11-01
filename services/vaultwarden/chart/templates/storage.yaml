@@ -36,3 +36,4 @@ spec:
     requests:
       storage: 1000P
   storageClassName: "local-storage"
+  volumeName: {{ .Values.name }}
