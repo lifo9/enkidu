@@ -1,5 +1,5 @@
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: {{ .Values.name }}
@@ -21,7 +21,7 @@ spec:
     - name: {{ .Values.name }}
       port: {{ .Values.network.calibre_port_http }}
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: {{ .Values.name }}-web
@@ -43,7 +43,7 @@ spec:
     - name: {{ .Values.name }}-web
       port: {{ .Values.network.calibre_web_port_http }}
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: {{ .Values.name }}-ipwhitelist
@@ -55,7 +55,7 @@ spec:
       - "{{ $ip }}"
     {{- end }}
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: {{ .Values.name }}-auth
@@ -64,7 +64,7 @@ spec:
   basicAuth:
     secret: {{ .Values.name }}-auth
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: {{ .Values.name }}-web-auth
