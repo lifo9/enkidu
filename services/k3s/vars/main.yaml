@@ -1,0 +1,11 @@
+k3s_version: "v1.27.7+k3s1"
+system_upgrade_controller_version: "v0.13.1"
+prometheus_stack_version: "51.2.0"
+cert_manager_version: "v1.13.2"
+
+k3s_server_location: "/kube/kube_data/k3s"
+
+cloudflare_api_token: "{{ lookup('env', 'CLOUDFLARE_API_TOKEN') }}"
+letsencrypt_email: "{{ lookup('env', 'LETSENCRYPT_EMAIL') }}"
+cloudflare_email: "{{ lookup('env', 'CLOUDFLARE_EMAIL') }}"
+certificate_domain: "{{ lookup('env', 'CERTIFICATE_DOMAIN') }}"

@@ -3,10 +3,6 @@ kube_data_dir: "{{ kube_dir }}/kube_data"
 kube_app_data_dir: "{{ kube_dir }}/app_data"
 k3s_server_location: "{{ kube_data_dir }}/k3s"
 master_ip: "{{ hostvars['server']['ansible_host'] }}"
-cloudflare_api_token: "{{ lookup('env', 'CLOUDFLARE_API_TOKEN') }}"
-letsencrypt_email: "{{ lookup('env', 'LETSENCRYPT_EMAIL') }}"
-cloudflare_email: "{{ lookup('env', 'CLOUDFLARE_EMAIL') }}"
-certificate_domain: "{{ lookup('env', 'CERTIFICATE_DOMAIN') }}"
 backup_dataset: tank/storage/backup
 datasets:
   - name: kube

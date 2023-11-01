@@ -1,16 +1,3 @@
-- name: Copy Traefik config
-  ansible.builtin.template:
-    src: "files/traefik-config.yaml"
-    dest: "{{ k3s_server_location }}/server/manifests/traefik-config.yaml"
-    owner: root
-    group: root
-    mode: "0600"
-
-- name: Apply Traefik config
-  ansible.builtin.command: >-
-    kubectl apply -f "{{ k3s_server_location }}/server/manifests/traefik-config.yaml"
-  changed_when: true
-
 - name: Update sources
   ansible.builtin.apt:
     update_cache: true
@@ -54,30 +41,6 @@
   kubernetes.core.helm_plugin:
     plugin_path: https://github.com/databus23/helm-diff
     state: present
-
-- name: Install the system-upgrade-controller
-  become: false
-  kubernetes.core.k8s:
-    state: present
-    src: https://github.com/rancher/system-upgrade-controller/releases/latest/download/system-upgrade-controller.yaml
-
-- name: Label node with k3s-upgrade
-  become: false
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Node
-      metadata:
-        name: "{{ ansible_hostname }}"
-        labels:
-          k3s-upgrade: 'true'
-
-- name: Configure upgrade plan
-  become: false
-  kubernetes.core.k8s:
-    state: present
-    template: files/upgrade-plan.yaml
 
 - name: Install kill-k3s script
   ansible.builtin.template:
