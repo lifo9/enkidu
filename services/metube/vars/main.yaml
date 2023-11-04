@@ -1,5 +1,0 @@
-kube_app_data: /kube/app_data
-domain: "{{ lookup('env', 'DOMAIN') }}"
-uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
-ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
-downloads_path: "{{ lookup('env', 'DOWNLOADS_PATH') }}"

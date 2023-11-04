@@ -12,6 +12,13 @@
         system: false
         create_home: false
 
+    - name: Add jellyfin user to ytdl group
+      become: true
+      ansible.builtin.user:
+        name: jellyfin
+        groups: ytdl
+        append: true
+
     - name: Get uid and gid of user
       ansible.builtin.command: id -u jellyfin
       register: jellyfin_uid
@@ -20,6 +27,11 @@
     - name: Get gid of user
       ansible.builtin.command: id -g jellyfin
       register: jellyfin_gid
+      changed_when: false
+
+    - name: Get  gid of ytdl user
+      ansible.builtin.command: id -g ytdl
+      register: ytdl_gid
       changed_when: false
 
     - name: Create jellyfin k8s namespace

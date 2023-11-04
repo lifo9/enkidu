@@ -1,0 +1,19 @@
+name: ytdl
+namespace: ytdl
+image:
+  repository: ghcr.io/jmbannon/ytdl-sub
+  tag: "2023.11.04"
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ ytdl_uid.stdout }}
+  runAsGroup: {{ ytdl_gid.stdout }}
+  fsGroup: {{ ytdl_gid.stdout }}
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  downloads_path: "{{ downloads_path }}"
+
+env:
+  PLAYLIST_URL: "{{ playlist_url }}"

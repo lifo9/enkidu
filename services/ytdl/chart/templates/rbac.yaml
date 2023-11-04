@@ -17,6 +17,7 @@ rules:
       - configmaps
     resourceNames:
       - {{ .Values.name }}
+      - {{ .Values.name }}-config
     verbs:
       - get
 ---

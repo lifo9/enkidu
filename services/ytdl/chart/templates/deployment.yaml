@@ -25,25 +25,24 @@ spec:
       - name: {{ .Values.name }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: IfNotPresent
+        command: ["/entrypoint.sh"]
         envFrom:
         - configMapRef:
             name: {{ .Values.name }}
-        ports:
-        - containerPort: {{ .Values.network.service_port_http }}
-          name: http
-          protocol: TCP
-        livenessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.network.service_port_http }}
-        readinessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.network.service_port_http }}
         volumeMounts:
-        - mountPath: /download
-          name: downloads
+          - name: downloads
+            mountPath: /downloads
+          - name: config
+            mountPath: /config.yaml
+            subPath: config.yaml
+          - name: config
+            mountPath: /entrypoint.sh
+            subPath: entrypoint.sh
       volumes:
       - name: downloads
         persistentVolumeClaim:
          claimName: {{ .Values.name }}-downloads
+      - name: config
+        configMap:
+          name: {{ .Values.name }}-config
+          defaultMode: 0777

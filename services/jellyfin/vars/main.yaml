@@ -1,4 +1,5 @@
 kube_app_data: /kube/app_data
 media_path: "{{ lookup('env', 'MEDIA_PATH') }}"
+youtube_path: "{{ lookup('env', 'YOUTUBE_PATH') }}"
 domain: "{{ lookup('env', 'DOMAIN') }}"
 uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"

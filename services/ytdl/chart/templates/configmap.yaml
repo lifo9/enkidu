@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+data:
+  {{- range $key, $val := .Values.env }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+data:
+  config.yaml: |
+    configuration:
+      working_directory: "/tmp"
+      umask: "027"
+    presets:
+      liked_videos:
+        overrides:
+          video_name: "{title_sanitized}"
+          video_type: "{channel}"
+          video_path: "{video_type_sanitized}/{video_name}"
+          nfo_episode_name: "{title_sanitized}"
+          nfo_episode_season: "{upload_year}"
+          nfo_episode_title: "{title}"
+          nfo_episode_plot: "{webpage_url}\n\n{description}"
+          nfo_episode_year: "{upload_year}"
+          nfo_episode_aired: "{upload_date_standardized}"
+          nfo_show_name: "{video_type_sanitized}"
+
+        chapters:
+          embed_chapters: True
+          allow_chapters_from_comments: True
+
+        subtitles:
+          subtitles_name: "{video_type_sanitized}/{title_sanitized}.{lang}.{subtitles_ext}"
+          subtitles_type: "srt"
+          embed_subtitles: False
+          languages: "en"
+          allow_auto_generated_subtitles: False
+
+        nfo_tags:
+          kodi_safe: False
+          nfo_name: "{video_path}.nfo"
+          nfo_root: "episodedetails"
+          tags:
+            season: "{nfo_episode_season}"
+            title: "{nfo_episode_title}"
+            plot: "{nfo_episode_plot}"
+            year: "{nfo_episode_year}"
+            aired: "{nfo_episode_aired}"
+
+        output_directory_nfo_tags:
+          kodi_safe: False
+          nfo_name: "{video_type_sanitized}/tvshow.nfo"
+          nfo_root: "tvshow"
+          tags:
+            title: "{nfo_show_name}"
+
+        output_options:
+          output_directory: "/downloads/liked_videos"
+          file_name: "{video_path}.{ext}"
+          thumbnail_name: "{video_path}.{thumbnail_ext}"
+          download_archive_name: ".ytdl-sub-download-archive.json"
+          maintain_download_archive: True
+
+        format: "bestvideo+bestaudio/best"
+
+        ytdl_options:
+          break_on_existing: True
+  entrypoint.sh: |
+    #!/bin/bash
+    set -e
+    while true; do
+      tmpfile=$(mktemp)
+
+      curl -s "$PLAYLIST_URL" >$tmpfile
+
+      cat $tmpfile | jq -r '.items[] | .url' | while read url; do
+        ytdl-sub dl --preset "liked_videos" --download.url "$url"
+      done
+
+      rm $tmpfile
+
+      sleep 3600
+    done

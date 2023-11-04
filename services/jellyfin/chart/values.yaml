@@ -10,6 +10,7 @@ securityContext:
   runAsUser: {{ jellyfin_uid.stdout }}
   runAsGroup: {{ jellyfin_gid.stdout }}
   fsGroup: {{ jellyfin_gid.stdout }}
+  supplementalGroups: [{{ytdl_gid.stdout }}]
 
 network:
   service_port_http: 8003
@@ -18,6 +19,7 @@ storage:
   node_name: "{{ ansible_hostname }}"
   data_path: "{{ kube_app_data }}/jellyfin"
   media_path: "{{ media_path }}"
+  youtube_path: "{{ youtube_path }}"
 
 env:
   domain: "{{ domain }}"

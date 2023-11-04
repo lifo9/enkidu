@@ -3,3 +3,4 @@ EconomistWorldInBriefBridge
 Pctuning
 PctuningPodcast
 DennikN
+InvidiousPlaylist
