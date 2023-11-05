@@ -34,6 +34,8 @@ class InvidiousPlaylistBridge extends FeedExpander
       $videos = array_merge($videos, $current_page_videos);
     }
 
+    $videos = array_reverse($videos); // Newest first
+
     foreach ($videos as $video) {
       $this->items[] = $this->parseItem($video);
     }

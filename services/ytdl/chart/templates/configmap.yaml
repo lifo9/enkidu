@@ -39,7 +39,7 @@ data:
 
         chapters:
           embed_chapters: True
-          allow_chapters_from_comments: True
+          allow_chapters_from_comments: False
 
         subtitles:
           subtitles_name: "{video_type_sanitized}/{title_sanitized}.{lang}.{subtitles_ext}"
