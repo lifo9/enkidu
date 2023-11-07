@@ -85,11 +85,33 @@ data:
 
       curl -s "$PLAYLIST_URL" >$tmpfile
 
-      cat $tmpfile | jq -r '.items[] | .url' | while read url; do
+      cat $tmpfile | jq -r ".items[0:$LAST_N] | .[] | .url" | while read url; do
         ytdl-sub dl --preset "liked_videos" --download.url "$url"
+
+        META=$(yt-dlp --cache-dir /downloads/tmp --dump-json --skip-download "$url" || echo '{}' | jq -r)
+        CHANNEL_NAME=$(echo -E "$META" | jq -r .channel)
+        CHANNEL_URL=$(echo -E "$META" | jq -r .channel_url)
+
+        if [[ "$CHANNEL_NAME" == null ]]; then
+          continue
+        fi
+
+        if [[ -d "/downloads/liked_videos/${CHANNEL_NAME}" && ! -f "/downloads/liked_videos/${CHANNEL_NAME}/poster.jpg" ]]; then
+          CHANNEL_THUMBNAILS_DATA=$(yt-dlp --cache-dir /downloads/tmp --list-thumbnails --playlist-items 0 --skip-download "$CHANNEL_URL")
+          AVATAR_UNCROPPED_URL=$(echo "$CHANNEL_THUMBNAILS_DATA" | grep avatar_uncropped  | cut -d' ' -f4)
+          BANNER_UNCROPPED_URL=$(echo "$CHANNEL_THUMBNAILS_DATA" | grep banner_uncropped  | cut -d' ' -f4)
+          if [[ "$AVATAR_UNCROPPED_URL" ]]; then
+            echo "Downloading $CHANNEL_NAME poster"
+            curl -s "$AVATAR_UNCROPPED_URL" -o "/downloads/liked_videos/${CHANNEL_NAME}/poster.jpg"
+          fi
+          if [[ "$BANNER_UNCROPPED_URL" ]]; then
+            echo "Downloading $CHANNEL_NAME banner"
+            curl -s "$BANNER_UNCROPPED_URL" -o "/downloads/liked_videos/${CHANNEL_NAME}/fanart.jpg"
+          fi
+        fi
       done
 
       rm $tmpfile
 
-      sleep 3600
+      sleep 10800
     done
