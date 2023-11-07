@@ -75,4 +75,4 @@
         name: "Vaultwarden uptime-push"
         user: "uptimepush"
         minute: "*"
-        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Vaultwarden Web Vault" "{{ uptime_endpoint }}"'
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/" "Vaultwarden Web" "{{ uptime_endpoint }}"'
