@@ -2,7 +2,7 @@ name: ytdl
 namespace: ytdl
 image:
   repository: ghcr.io/jmbannon/ytdl-sub
-  tag: "2023.11.04"
+  tag: "2023.11.06"
 
 securityContext:
   runAsNonRoot: true
