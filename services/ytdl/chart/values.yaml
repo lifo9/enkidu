@@ -17,4 +17,4 @@ storage:
 
 env:
   PLAYLIST_URL: "{{ playlist_url }}"
-  LAST_N: ""
+  LAST_N: "42"
