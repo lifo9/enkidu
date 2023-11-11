@@ -47,3 +47,4 @@ env:
     REDIS_HOST: "nextcloud-redis"
     MYSQL_DATABASE: "{{ mysql_database }}"
     MYSQL_USER: "{{ mysql_user }}"
+    PHP_MEMORY_LIMIT: "2048M"
