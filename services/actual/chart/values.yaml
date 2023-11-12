@@ -1,0 +1,24 @@
+name: actual
+namespace: actual
+image:
+  repository: ghcr.io/actualbudget/actual-server
+  tag: 23.11.0-alpine
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ actual_uid.stdout }}
+  runAsGroup: {{ actual_gid.stdout }}
+  fsGroup: {{ actual_gid.stdout }}
+
+network:
+  http_port: 5006
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/actual"
+
+env:
+  domain: "{{ domain }}"
+  ACTUAL_HOSTNAME: 0.0.0.0
