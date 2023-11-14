@@ -39,6 +39,24 @@
         group: gitea
         mode: "0700"
 
+    - name: Create gitea-etc directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/gitea/gitea-etc"
+        state: directory
+        owner: gitea
+        group: gitea
+        mode: "0700"
+
+    - name: Create gitea-lib directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/gitea/gitea-lib"
+        state: directory
+        owner: gitea
+        group: gitea
+        mode: "0700"
+
     - name: Create gitea runner directory
       become: true
       ansible.builtin.file:
