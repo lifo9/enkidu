@@ -1,11 +1,11 @@
 name: Deploy services
 
-# on:
-#   push:
-#     paths:
-#       - "services/**"
-#     branches:
-#       - "master"
+on:
+  push:
+    paths:
+      - "services/**"
+    branches:
+      - "master"
 
 jobs:
   docker:
