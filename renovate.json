@@ -49,6 +49,18 @@
       "depNameTemplate": "k3s",
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
       "datasourceTemplate": "custom.k3s"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^services/k3s/vars/main\\.yaml$"
+      ],
+      "matchStrings": [
+        "system_upgrade_controller_version: \"(?<currentValue>\\S+)\""
+      ],
+      "versioningTemplate": "semver",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "rancher/system-upgrade-controller"
     }
   ],
   "customDatasources": {
