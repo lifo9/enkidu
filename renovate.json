@@ -74,6 +74,18 @@
       "datasourceTemplate": "helm",
       "depNameTemplate": "kube-prometheus-stack",
       "registryUrlTemplate": "https://prometheus-community.github.io/helm-charts"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^services/k3s/vars/main\\.yaml$"
+      ],
+      "matchStrings": [
+        "cert_manager_version: \"(?<currentValue>\\S+)\""
+      ],
+      "versioningTemplate": "semver",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "cert-manager/cert-manager"
     }
   ],
   "customDatasources": {
