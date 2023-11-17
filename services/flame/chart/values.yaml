@@ -1,0 +1,26 @@
+name: flame
+namespace: flame
+image:
+  repository: docker.io/pawelmalak/flame
+  tag: 2.3.1
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ flame_uid.stdout }}
+  runAsGroup: {{ flame_gid.stdout }}
+  fsGroup: {{ flame_gid.stdout }}
+
+network:
+  http_port: 5005
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+  data_path: "{{ kube_app_data }}/flame"
+
+secrets:
+  PASSWORD: "{{ flame_password }}"
+
+env:
+  domain: "{{ domain }}"
