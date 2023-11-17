@@ -61,6 +61,19 @@
       "versioningTemplate": "semver",
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "rancher/system-upgrade-controller"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "^services/k3s/vars/main\\.yaml$"
+      ],
+      "matchStrings": [
+        "prometheus_stack_version: \"(?<currentValue>\\S+)\""
+      ],
+      "versioningTemplate": "semver",
+      "datasourceTemplate": "helm",
+      "depNameTemplate": "kube-prometheus-stack",
+      "registryUrlTemplate": "https://prometheus-community.github.io/helm-charts"
     }
   ],
   "customDatasources": {
