@@ -43,7 +43,16 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /models
+        {{- range $path, $_ := .Files.Glob "files/*" }}
+        - name: config
+          mountPath: /models/{{ $path | base }}
+          subPath: {{ $path | base }}
+          readOnly: true
+        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:
          claimName: {{ .Values.name }}
+      - name: config
+        configMap:
+          name: {{ .Values.name }}-config
