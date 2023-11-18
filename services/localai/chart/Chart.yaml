@@ -1,0 +1,6 @@
+apiVersion: v2
+name: localai
+description: A Helm chart to install LocalAI
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
