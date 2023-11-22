@@ -2,7 +2,7 @@ name: navidrome
 namespace: navidrome
 image:
   repository: deluan/navidrome
-  tag: 0.50.0
+  tag: 0.50.1
 
 securityContext:
   runAsNonRoot: true
