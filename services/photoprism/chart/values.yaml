@@ -3,7 +3,7 @@ namespace: photoprism
 photoprism:
   image:
     repository: docker.io/photoprism/photoprism
-    tag: 231021
+    tag: 231128
 mariadb:
   image:
     repository: docker.io/mariadb
