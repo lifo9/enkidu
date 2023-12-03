@@ -43,7 +43,16 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
+        {{- range $path, $_ := .Files.Glob "files/*" }}
+        - name: overrides
+          mountPath: /app/src/{{ $path | base }}
+          subPath: {{ $path | base }}
+          readOnly: true
+        {{- end }}
       volumes:
       - name: data
         persistentVolumeClaim:
          claimName: {{ .Values.name }}
+      - name: overrides
+        configMap:
+          name: {{ .Values.name }}-overrides

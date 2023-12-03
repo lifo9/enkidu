@@ -10,3 +10,13 @@ data:
   {{- range $key, $val := .Values.env }}
   {{ $key }}: {{ $val | quote }}
   {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-overrides
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+data:
+  {{- (.Files.Glob "files/*").AsConfig | nindent 2 }}
