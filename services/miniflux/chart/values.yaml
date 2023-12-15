@@ -3,7 +3,7 @@ namespace: miniflux
 app:
   image:
     repository: docker.io/miniflux/miniflux
-    tag: 2.0.50
+    tag: 2.0.51
 postgres:
   image:
     repository: postgres
