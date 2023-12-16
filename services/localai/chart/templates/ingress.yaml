@@ -12,21 +12,6 @@ spec:
   routes:
   - kind: Rule
     match: Host(`{{ .Values.env.domain }}`) && PathPrefix(`/`)
-    middlewares:
-      - name: {{ .Values.name }}-ipwhitelist
-        namespace: {{ .Values.namespace }}
     services:
-    - name: {{ .Values.name }}
-      port: {{ .Values.network.http_port }}
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: {{ .Values.name }}-ipwhitelist
-  namespace: {{ .Values.namespace }}
-spec:
-  ipWhiteList:
-    sourceRange:
-    {{- range $ip := splitList "," .Values.network.ip_whitelist }}
-      - "{{ $ip }}"
-    {{- end }}
+    - name: {{ .Values.name }}-litellm
+      port: {{ .Values.network.litellm.http_port }}

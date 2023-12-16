@@ -1,4 +1,5 @@
 kube_app_data: /kube/app_data
 domain: "{{ lookup('env', 'DOMAIN') }}"
 uptime_endpoint: "{{ lookup('env', 'UPTIME_ENDPOINT') }}"
-ip_whitelist: "{{ lookup('env', 'IP_WHITELIST') }}"
+openai_api_key: "{{ lookup('env', 'OPENAI_API_KEY') }}"
+localai_api_key: "{{ lookup('env', 'LOCALAI_API_KEY') }}"

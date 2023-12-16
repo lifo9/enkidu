@@ -16,8 +16,18 @@ rules:
     resources:
       - configmaps
     resourceNames:
-      - {{ .Values.name }}
-      - {{ .Values.name }}-config
+      - {{ .Values.name }}-localai
+      - {{ .Values.name }}-litellm
+      - {{ .Values.name }}-localai-config
+      - {{ .Values.name }}-litellm-config
+    verbs:
+      - get
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    resourceNames:
+      - {{ .Values.name }}-litellm
     verbs:
       - get
 ---

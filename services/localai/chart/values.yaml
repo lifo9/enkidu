@@ -1,8 +1,13 @@
 name: localai
 namespace: localai
-image:
-  repository: quay.io/go-skynet/local-ai
-  tag: sha-2f7beb6
+localai:
+  image:
+    repository: quay.io/go-skynet/local-ai
+    tag: sha-2f7beb6
+litellm:
+  image:
+    repository: ghcr.io/berriai/litellm
+    tag: main-v1.12.3
 
 securityContext:
   runAsNonRoot: true
@@ -12,18 +17,27 @@ securityContext:
   fsGroup: {{ localai_gid.stdout }}
 
 network:
-  http_port: 8080
-  ip_whitelist: "{{ ip_whitelist }}"
+  localai:
+    http_port: 8080
+  litellm:
+    http_port: 8000
 
 storage:
   node_name: "{{ ansible_hostname }}"
   data_path: "{{ kube_app_data }}/localai"
 
+secrets:
+  litellm:
+    OPENAI_API_KEY: "{{ openai_api_key }}"
+    LOCALAI_API_KEY: "{{ localai_api_key }}"
+
 env:
   domain: "{{ domain }}"
-  THREADS: 6
-  MODELS_PATH: /models
-  DEBUG: "false"
-  SINGLE_ACTIVE_BACKEND: "true"
-
-
+  localai:
+    THREADS: 6
+    MODELS_PATH: /models
+    DEBUG: "false"
+    SINGLE_ACTIVE_BACKEND: "true"
+  litellm:
+    PIP_CACHE_DIR: /tmp/pip
+    PYTHONUSERBASE: /tmp/pythonuserbase

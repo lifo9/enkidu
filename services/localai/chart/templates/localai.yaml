@@ -2,19 +2,19 @@
 apiVersion: "apps/v1"
 kind: Deployment
 metadata:
-  name: {{ .Values.name }}
+  name: {{ .Values.name }}-localai
   namespace: {{ .Values.namespace }}
   labels:
-    app: {{ .Values.name }}
+    app: {{ .Values.name }}-localai
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.name }}
+      app: {{ .Values.name }}-localai
   template:
     metadata:
       labels:
-        app: {{ .Values.name }}
+        app: {{ .Values.name }}-localai
     spec:
       serviceAccountName: {{ .Values.name }}
       {{- with .Values.securityContext }}
@@ -22,30 +22,31 @@ spec:
       {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Values.name }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+      - name: {{ .Values.name }}-localai
+        image: {{ .Values.localai.image.repository }}:{{ .Values.localai.image.tag }}
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: {{ .Values.name }}
+            name: {{ .Values.name }}-localai
         ports:
-        - containerPort: {{ .Values.network.http_port }}
+        - containerPort: {{ .Values.network.localai.http_port }}
           name: http
           protocol: TCP
         livenessProbe:
           httpGet:
             path: /readyz
-            port: {{ .Values.network.http_port }}
+            port: {{ .Values.network.localai.http_port }}
         readinessProbe:
           httpGet:
             path: /v1/models
-            port: {{ .Values.network.http_port }}
+            port: {{ .Values.network.localai.http_port }}
         volumeMounts:
         - name: data
+          subPath: localai
           mountPath: /models
-        {{- range $path, $_ := .Files.Glob "files/*" }}
+        {{- range $path, $_ := .Files.Glob "files/localai/*" }}
         - name: config
-          mountPath: /models/{{ $path | base }}
+          mountPath: "/models/{{ $path | base }}"
           subPath: {{ $path | base }}
           readOnly: true
         {{- end }}
@@ -55,4 +56,4 @@ spec:
          claimName: {{ .Values.name }}
       - name: config
         configMap:
-          name: {{ .Values.name }}-config
+          name: {{ .Values.name }}-localai-config

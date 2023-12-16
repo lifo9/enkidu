@@ -39,6 +39,24 @@
         group: localai
         mode: "0700"
 
+    - name: Create localai/localai directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/localai/localai"
+        state: directory
+        owner: localai
+        group: localai
+        mode: "0700"
+
+    - name: Create localai/litellm directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ kube_app_data }}/localai/litellm"
+        state: directory
+        owner: localai
+        group: localai
+        mode: "0700"
+
     - name: Create temporary build directory
       register: build_dir
       ansible.builtin.tempfile:
@@ -75,4 +93,4 @@
         name: "localai uptime-push"
         user: "uptimepush"
         minute: "*"
-        job: '/usr/local/bin/uptime-push "https://{{ domain }}/readyz" "OK" "{{ uptime_endpoint }}"'
+        job: '/usr/local/bin/uptime-push "https://{{ domain }}/test" "test" "{{ uptime_endpoint }}"'

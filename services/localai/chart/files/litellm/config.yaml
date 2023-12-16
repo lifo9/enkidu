@@ -1,0 +1,20 @@
+model_list:
+  - model_name: gpt-3.5-turbo-1106
+    litellm_params:
+      model: openai/gpt-3.5-turbo-1106
+      api_key: "os.environ/OPENAI_API_KEY"
+  - model_name: gpt-4-1106-preview
+    litellm_params:
+      model: openai/gpt-4-1106-preview
+      api_key: "os.environ/OPENAI_API_KEY"
+  - model_name: mistral
+    litellm_params:
+      model: openai/mistral
+      api_base: "http://localai-localai.localai.svc.cluster.local:8080"
+  - model_name: mixtral
+    litellm_params:
+      model: openai/mixtral
+      api_base: "http://localai-localai.localai.svc.cluster.local:8080"
+
+general_settings:
+  master_key: "os.environ/LOCALAI_API_KEY"

@@ -2,21 +2,43 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.name }}
+  name: {{ .Values.name }}-localai
   namespace: {{ .Values.namespace }}
   labels:
-    app: {{ .Values.name }}
+    app: {{ .Values.name }}-localai
 data:
-  {{- range $key, $val := .Values.env }}
+  {{- range $key, $val := .Values.env.localai }}
   {{ $key }}: {{ $val | quote }}
   {{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.name }}-config
+  name: {{ .Values.name }}-litellm
   namespace: {{ .Values.namespace }}
   labels:
-    app: {{ .Values.name }}
+    app: {{ .Values.name }}-litellm
 data:
-  {{- (.Files.Glob "files/*").AsConfig | nindent 2 }}
+  {{- range $key, $val := .Values.env.litellm }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-localai-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-localai
+data:
+  {{- (.Files.Glob "files/localai/*").AsConfig | nindent 2 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-litellm-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}-litellm
+data:
+  {{- (.Files.Glob "files/litellm/*").AsConfig | nindent 2 }}
