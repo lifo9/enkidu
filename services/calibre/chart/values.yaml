@@ -2,7 +2,7 @@ name: calibre
 namespace: calibre
 image:
   repository: lscr.io/linuxserver/calibre
-  tag: 7.1.0
+  tag: 7.2.0
 
 securityContext:
   # LinuxServer.io containers cannot be run as non-root,
