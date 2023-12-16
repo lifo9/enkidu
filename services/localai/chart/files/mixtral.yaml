@@ -1,13 +1,12 @@
-name: mistral
-context_size: 4096
-f16: true
+name: mixtral
+context_size: 32768
 mmap: false
 threads: 6
 parameters:
-  model: mistral-7b-openorca.Q6_K.gguf
-  temperature: 0.6
-  top_k: 40
-  top_p: 0.95
+  model: dolphin-2.5-mixtral-8x7b.Q4_K_M.gguf
+  temperature: 1.33
+  top_k: 0
+  top_p: 1
 template:
   chat_message: chatml
   chat: chatml-block

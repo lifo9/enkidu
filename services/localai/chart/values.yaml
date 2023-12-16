@@ -2,7 +2,7 @@ name: localai
 namespace: localai
 image:
   repository: quay.io/go-skynet/local-ai
-  tag: v2.0.0
+  tag: sha-2f7beb6
 
 securityContext:
   runAsNonRoot: true
@@ -24,6 +24,6 @@ env:
   THREADS: 6
   MODELS_PATH: /models
   DEBUG: "false"
-  SINGLE_ACTIVE_BACKEND: "false"
+  SINGLE_ACTIVE_BACKEND: "true"
 
 
