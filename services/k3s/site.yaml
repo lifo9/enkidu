@@ -8,3 +8,4 @@
     - traefik
     - prometheus
     - cert-manager
+    - nvidia

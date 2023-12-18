@@ -49,3 +49,14 @@
     owner: root
     group: root
     mode: "0755"
+
+- name: Increase inotify limits
+  ansible.builtin.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { key: "fs.inotify.max_user_watches", value: "2099999999" }
+    - { key: "fs.inotify.max_user_instances", value: "2099999999" }
+    - { key: "fs.inotify.max_queued_events", value: "2099999999" }

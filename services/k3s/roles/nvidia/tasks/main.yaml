@@ -1,0 +1,69 @@
+- name: Add NVIDIA GPG key
+  ansible.builtin.apt_key:
+    url: https://nvidia.github.io/libnvidia-container/gpgkey
+    state: present
+
+- name: Add NVIDIA container toolkit APT sources list
+  ansible.builtin.copy:
+    dest: "/etc/apt/sources.list.d/nvidia-container-toolkit.list"
+    content: |
+      deb https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /
+      #deb https://nvidia.github.io/libnvidia-container/experimental/deb/$(ARCH) /
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install NVIDIA container toolkit
+  ansible.builtin.apt:
+    name: nvidia-container-toolkit
+    state: present
+    update_cache: true
+
+- name: Configure the container runtime
+  ansible.builtin.command: nvidia-ctk runtime configure --runtime=containerd --config "{{ k3s_server_location }}/agent/etc/containerd/config.toml"
+  changed_when: true
+
+- name: Apply RuntimeClass resource for Nvidia
+  become: false
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: node.k8s.io/v1
+      kind: RuntimeClass
+      metadata:
+        name: nvidia
+      handler: nvidia
+
+- name: Copy /sbin/ldconfig to /sbin/ldconfig.real
+  ansible.builtin.copy:
+    src: /sbin/ldconfig
+    dest: /sbin/ldconfig.real
+    remote_src: true
+
+- name: Add nvidia repo
+  become: false
+  kubernetes.core.helm_repository:
+    name: nvidia
+    repo_url: "https://helm.ngc.nvidia.com/nvidia"
+
+- name: Install NVIDIA GPU Operator
+  become: false
+  kubernetes.core.helm:
+    name: nvidiagpu
+    chart_ref: nvidia/gpu-operator
+    chart_version: "{{ nvidia_gpu_operator_version }}"
+    release_namespace: gpu-operator
+    create_namespace: true
+    wait: true
+    update_repo_cache: true
+    values:
+      toolkit:
+        env:
+          - name: "CONTAINERD_CONFIG"
+            value: "{{ k3s_server_location }}/agent/etc/containerd/config.toml"
+          - name: "CONTAINERD_SOCKET"
+            value: "/run/k3s/containerd/containerd.sock"
+          - name: "CONTAINERD_RUNTIME_CLASS"
+            value: "nvidia"
+          - name: "CONTAINERD_SET_AS_DEFAULT"
+            value: "true"
