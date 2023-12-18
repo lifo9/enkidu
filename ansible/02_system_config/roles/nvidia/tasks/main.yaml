@@ -1,0 +1,8 @@
+- name: Install NVIDIA packages
+  ansible.builtin.apt:
+    name:
+      - pciutils
+      - nvidia-driver
+      - firmware-misc-nonfree
+      - nvtop
+    state: present
