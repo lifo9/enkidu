@@ -1,6 +1,7 @@
 name: mistral
 context_size: 4096
 f16: true
+gpu_layers: 33
 mmap: false
 threads: 6
 parameters:

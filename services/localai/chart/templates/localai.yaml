@@ -16,6 +16,7 @@ spec:
       labels:
         app: {{ .Values.name }}-localai
     spec:
+      runtimeClassName: nvidia
       serviceAccountName: {{ .Values.name }}
       {{- with .Values.securityContext }}
       securityContext:
@@ -25,6 +26,9 @@ spec:
       - name: {{ .Values.name }}-localai
         image: {{ .Values.localai.image.repository }}:{{ .Values.localai.image.tag }}
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            nvidia.com/gpu: 1
         envFrom:
         - configMapRef:
             name: {{ .Values.name }}-localai

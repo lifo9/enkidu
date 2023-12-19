@@ -3,7 +3,7 @@ namespace: localai
 localai:
   image:
     repository: quay.io/go-skynet/local-ai
-    tag: sha-2f7beb6
+    tag: sha-2f7beb6-cublas-cuda11-core
 litellm:
   image:
     repository: ghcr.io/berriai/litellm
@@ -36,7 +36,7 @@ env:
   localai:
     THREADS: 6
     MODELS_PATH: /models
-    DEBUG: "false"
+    DEBUG: "true"
     SINGLE_ACTIVE_BACKEND: "true"
   litellm:
     PIP_CACHE_DIR: /tmp/pip

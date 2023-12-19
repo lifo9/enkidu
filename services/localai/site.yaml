@@ -12,6 +12,18 @@
         system: false
         create_home: false
 
+    - name: Add user to video group
+      become: true
+      ansible.builtin.user:
+        name: localai
+        groups: video
+        append: true
+
+    - name: Get gid of video group
+      ansible.builtin.shell: "set -o pipefail | getent group video | cut -d: -f3"
+      register: video_gid
+      changed_when: false
+
     - name: Get uid and gid of user
       ansible.builtin.command: id -u localai
       register: localai_uid
