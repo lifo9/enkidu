@@ -1,7 +1,9 @@
 name: mixtral
-context_size: 32768
+context_size: 4096
 mmap: false
 threads: 6
+gpu_layers: 7
+fp16: true
 parameters:
   model: dolphin-2.5-mixtral-8x7b.Q4_K_M.gguf
   temperature: 1.33

@@ -3,5 +3,9 @@ Inside container, run:
 ```bash
 wget https://huggingface.co/skeskinen/ggml/resolve/main/all-MiniLM-L12-v2/ggml-model-f32.bin -O /models/ggml-model-f32.bin
 
-wget https://huggingface.co/TheBloke/Mistral-7B-OpenOrca-GGUF/resolve/main/mistral-7b-openorca.Q6_K.gguf -O /models/mistral-7b-openorca.Q6_K.gguf
+wget https://huggingface.co/TheBloke/dolphin-2.2.1-mistral-7B-GGUF/resolve/main/dolphin-2.2.1-mistral-7b.Q6_K.gguf -O /models/dolphin-2.2.1-mistral-7b.Q6_K.gguf
+
+wget https://huggingface.co/TheBloke/dolphin-2.5-mixtral-8x7b-GGUF/blob/main/dolphin-2.5-mixtral-8x7b.Q4_K_M.gguf -O /models/dolphin-2.5-mixtral-8x7b.Q4_K_M.gguf
+
+wget https://huggingface.co/TheBloke/dolphin-2_2-yi-34b-GGUF/resolve/main/dolphin-2_2-yi-34b.Q4_K_M.gguf -O /models/dolphin-2_2-yi-34b.Q4_K_M.gguf
 ```

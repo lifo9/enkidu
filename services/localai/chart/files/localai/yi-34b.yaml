@@ -1,11 +1,11 @@
-name: mistral
-context_size: 4096
+name: yi-34b
+context_size: 8192
+gpu_layers: 10
 mmap: false
 threads: 6
-gpu_layers: 33
 fp16: true
 parameters:
-  model: dolphin-2.2.1-mistral-7b.Q6_K.gguf
+  model: dolphin-2_2-yi-34b.Q4_K_M.gguf
   temperature: 1
   top_k: 0
   top_p: 1
