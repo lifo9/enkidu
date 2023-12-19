@@ -36,7 +36,7 @@ env:
   localai:
     THREADS: 6
     MODELS_PATH: /models
-    DEBUG: "true"
+    DEBUG: "false"
     SINGLE_ACTIVE_BACKEND: "true"
   litellm:
     PIP_CACHE_DIR: /tmp/pip
