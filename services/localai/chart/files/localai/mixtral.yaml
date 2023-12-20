@@ -1,14 +1,15 @@
 name: mixtral
 context_size: 4096
-mmap: false
-threads: 6
-gpu_layers: 7
+threads: 5
+gpu_layers: 6
+low_vram: true
 fp16: true
 parameters:
-  model: dolphin-2.5-mixtral-8x7b.Q4_K_M.gguf
+  model: dolphin-2.5-mixtral-8x7b.Q5_0.gguf
   temperature: 1.33
   top_k: 0
   top_p: 1
+  rope_freq_base: 1000000
 template:
   chat_message: chatml
   chat: chatml-block

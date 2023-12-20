@@ -34,7 +34,7 @@ secrets:
 env:
   domain: "{{ domain }}"
   localai:
-    THREADS: 6
+    THREADS: 5
     MODELS_PATH: /models
     DEBUG: "false"
     SINGLE_ACTIVE_BACKEND: "true"
