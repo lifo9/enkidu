@@ -1,0 +1,22 @@
+name: chatbox
+namespace: chatbox
+image:
+    repository: {{ chatbox_image_repository }}
+    tag: latest
+
+securityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  runAsUser: {{ chatbox_uid.stdout }}
+  runAsGroup: {{ chatbox_gid.stdout }}
+  fsGroup: {{ chatbox_gid.stdout }}
+
+network:
+  http_port: 8080
+  ip_whitelist: "{{ ip_whitelist }}"
+
+storage:
+  node_name: "{{ ansible_hostname }}"
+
+env:
+  domain: "{{ domain }}"
