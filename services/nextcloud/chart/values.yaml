@@ -3,7 +3,7 @@ namespace: nextcloud
 app:
   image:
     repository: docker.io/nextcloud
-    tag: 28.0.0-apache
+    tag: 28.0.1-apache
 redis:
   image:
     repository: docker.io/redis
