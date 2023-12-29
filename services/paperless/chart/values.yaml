@@ -3,7 +3,7 @@ namespace: paperless
 app:
   image:
     repository: ghcr.io/paperless-ngx/paperless-ngx
-    tag: 2.1.3
+    tag: 2.2.1
 redis:
   image:
     repository: docker.io/redis
