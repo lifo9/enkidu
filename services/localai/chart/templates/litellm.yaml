@@ -48,10 +48,6 @@ spec:
           mountPath: "/app/config.yaml"
           subPath: config.yaml
           readOnly: true
-        - name: config
-          mountPath: "/usr/local/lib/python3.9/site-packages/litellm/utils.py"
-          subPath: utils.py
-          readOnly: true
       volumes:
       - name: config
         configMap:

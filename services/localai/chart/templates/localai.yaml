@@ -8,6 +8,8 @@ metadata:
     app: {{ .Values.name }}-localai
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: {{ .Values.name }}-localai
@@ -26,9 +28,6 @@ spec:
       - name: {{ .Values.name }}-localai
         image: {{ .Values.localai.image.repository }}:{{ .Values.localai.image.tag }}
         imagePullPolicy: IfNotPresent
-        resources:
-          limits:
-            nvidia.com/gpu: 1
         envFrom:
         - configMapRef:
             name: {{ .Values.name }}-localai

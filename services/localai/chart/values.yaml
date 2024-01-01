@@ -3,7 +3,7 @@ namespace: localai
 localai:
   image:
     repository: quay.io/go-skynet/local-ai
-    tag: sha-2f7beb6-cublas-cuda11-core
+    tag: v2.3.1-cublas-cuda11-core
 litellm:
   image:
     repository: ghcr.io/berriai/litellm
