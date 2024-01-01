@@ -5,7 +5,7 @@ gpu_layers: 6
 low_vram: true
 fp16: true
 parameters:
-  model: dolphin-2.5-mixtral-8x7b.Q5_0.gguf
+  model: dolphin-2.7-mixtral-8x7b.Q5_0.gguf
   temperature: 1.33
   top_k: 0
   top_p: 1
