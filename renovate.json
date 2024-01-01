@@ -35,6 +35,12 @@
         "custom.k3s"
       ],
       "versioning": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<compatibility>\\+k3s)(?<build>\\d+)$"
+    },
+    {
+      "matchPackagePatterns": [
+        "ghcr.io/berriai/litellm"
+      ],
+      "versionCompatibility": "^(?<compatibility>.*)-(?<version>.*)$"
     }
   ],
   "customManagers": [
