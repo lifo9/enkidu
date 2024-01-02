@@ -1,0 +1,17 @@
+name: capybara
+context_size: 8192
+f16: true
+mmap: true
+gpu_layers: 10
+threads: 5
+low_vram: true
+parameters:
+  model: nous-capybara-34b.Q4_K_M.gguf
+  temperature: 0.2
+  top_k: 80
+  top_p: 0.7
+template:
+  chat: capybara-chat
+  completion: capybara-completion
+stopwords:
+- </s>

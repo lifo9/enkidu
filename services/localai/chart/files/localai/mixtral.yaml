@@ -1,18 +1,21 @@
 name: mixtral
 context_size: 4096
-threads: 5
+f16: true
+mmap: true
 gpu_layers: 6
+threads: 5
 low_vram: true
-fp16: true
 parameters:
   model: dolphin-2.7-mixtral-8x7b.Q5_0.gguf
-  temperature: 1.33
-  top_k: 0
-  top_p: 1
-  rope_freq_base: 1000000
+  temperature: 0.2
+  top_k: 40
+  top_p: 0.95
+  frequency_penalty: 1.1
+  batch: 512
+  tfz: 1.0
 template:
-  chat_message: chatml
-  chat: chatml-block
-  completion: completion
+  chat_message: mixtral-chat
+  chat: mixtral-block
+  completion: mixtral-completion
 stopwords:
 - <|im_end|>

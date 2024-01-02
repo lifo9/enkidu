@@ -15,9 +15,9 @@ model_list:
     litellm_params:
       model: openai/mixtral
       api_base: "http://localai-localai.localai.svc.cluster.local:8080"
-  - model_name: yi-34b
+  - model_name: capybara
     litellm_params:
-      model: openai/yi-34b
+      model: openai/capybara
       api_base: "http://localai-localai.localai.svc.cluster.local:8080"
 
 general_settings:
