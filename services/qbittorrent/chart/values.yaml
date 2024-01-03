@@ -7,7 +7,7 @@ app:
 gluetun:
   image:
     repository: ghcr.io/qdm12/gluetun
-    tag: v3.36.0
+    tag: v3.37.0
 
 securityContext:
   fsGroup: {{ qbittorrent_gid.stdout }}
