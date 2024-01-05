@@ -1,6 +1,6 @@
 ply==3.11
 pyasn1==0.5.1
-pycryptodomex==3.19.0
+pycryptodomex==3.19.1
 pysmi==0.3.4
 pysnmp-lextudio==5.0.30
 PyYAML==6.0.1
