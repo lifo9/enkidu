@@ -2,7 +2,7 @@ name: actual
 namespace: actual
 image:
   repository: ghcr.io/actualbudget/actual-server
-  tag: 23.12.1-alpine
+  tag: 24.1.0-alpine
 
 securityContext:
   runAsNonRoot: true
