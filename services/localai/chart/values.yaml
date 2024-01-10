@@ -7,7 +7,7 @@ localai:
 litellm:
   image:
     repository: ghcr.io/berriai/litellm
-    tag: main-v1.16.19
+    tag: main-v1.16.21
 
 securityContext:
   runAsNonRoot: true
